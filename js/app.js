@@ -1,8 +1,7 @@
-<script>
-const STATUS_URL="/arduino/status";
-const COMMAND_BASE_URL="/arduino/";
+const STATUS_URL="http://192.168.50.225/arduino/status";
+const COMMAND_BASE_URL="http://192.168.50.225/arduino/";
 const PRESSURE_STATUS_URL="http://192.168.50.51/pressure/pressure.php"
-const REFRESH_INTERVAL_MS=5000;
+const REFRESH_INTERVAL_MS=2000;
 const REQUEST_TIMEOUT_MS=8000;
 
 const controls=[...document.querySelectorAll(".api-control")];
@@ -341,4 +340,3 @@ refreshStatus(true);
 refreshPressure();
 setInterval(()=>refreshStatus(false),REFRESH_INTERVAL_MS);
 setInterval(refreshPressure,REFRESH_INTERVAL_MS);
-</script>
