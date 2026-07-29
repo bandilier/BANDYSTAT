@@ -1,1 +1,866 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
 
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  >
+
+  <meta name="theme-color" content="#09101d">
+
+  <title>BandyStat</title>
+
+  <style>
+    :root {
+      color-scheme: dark;
+
+      --background: #09101d;
+      --background-bottom: #050914;
+
+      --panel: #151f31;
+      --panel-dark: #101827;
+
+      --text: #f8fafc;
+      --muted: #94a3b8;
+
+      --border: rgba(148, 163, 184, 0.16);
+
+      --green: #34d399;
+      --orange: #fb923c;
+      --blue: #60a5fa;
+      --red: #f87171;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+
+      font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+
+      color: var(--text);
+
+      background:
+        radial-gradient(
+          circle at top,
+          #1a2945 0,
+          transparent 38%
+        ),
+        linear-gradient(
+          var(--background),
+          var(--background-bottom)
+        );
+    }
+
+    .page {
+      width: min(760px, 100%);
+      margin: auto;
+      padding: 18px 14px 30px;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+    }
+
+    .logo {
+      width: 46px;
+      height: 46px;
+
+      display: grid;
+      place-items: center;
+
+      border-radius: 14px;
+      border: 1px solid var(--border);
+
+      background:
+        linear-gradient(
+          145deg,
+          #293957,
+          #101827
+        );
+
+      font-weight: bold;
+    }
+
+    h1 {
+      margin: 0;
+
+      font-size: 1.65rem;
+      letter-spacing: -1px;
+    }
+
+    .subtitle {
+      margin-top: 2px;
+
+      color: var(--muted);
+      font-size: 0.82rem;
+    }
+
+    .connection {
+      display: flex;
+      align-items: center;
+
+      gap: 7px;
+      padding: 8px 10px;
+
+      border-radius: 999px;
+      border: 1px solid var(--border);
+
+      background: var(--panel-dark);
+
+      color: var(--muted);
+      font-size: 0.78rem;
+    }
+
+    .connection-dot {
+      width: 9px;
+      height: 9px;
+
+      border-radius: 50%;
+
+      background: var(--red);
+    }
+
+    .connection-dot.online {
+      background: var(--green);
+
+      box-shadow:
+        0 0 0 4px
+        rgba(52, 211, 153, 0.12);
+    }
+
+    .temperature-panel {
+      padding: 28px 18px;
+
+      border-radius: 24px;
+      border: 1px solid var(--border);
+
+      text-align: center;
+
+      background:
+        linear-gradient(
+          145deg,
+          #202d46,
+          #101827
+        );
+
+      box-shadow:
+        0 18px 45px
+        rgba(0, 0, 0, 0.28);
+    }
+
+    .label {
+      color: var(--muted);
+
+      font-size: 0.72rem;
+      font-weight: bold;
+
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+    }
+
+    .temperature {
+      margin: 5px 0 6px;
+
+      font-size: clamp(5rem, 20vw, 8rem);
+      font-weight: 300;
+      line-height: 1;
+
+      letter-spacing: -8px;
+    }
+
+    .temperature-unit {
+      margin-left: 5px;
+
+      font-size: 0.34em;
+      vertical-align: top;
+      letter-spacing: 0;
+    }
+
+    .temperature-details {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+
+      gap: 22px;
+
+      color: var(--muted);
+    }
+
+    .temperature-details strong {
+      color: var(--text);
+    }
+
+    .card-grid {
+      display: grid;
+
+      grid-template-columns:
+        1fr 1fr;
+
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .card {
+      min-height: 108px;
+      padding: 16px;
+
+      border-radius: 19px;
+      border: 1px solid var(--border);
+
+      background:
+        rgba(21, 31, 49, 0.94);
+    }
+
+    .card-value {
+      margin-top: 12px;
+
+      font-size: 1.75rem;
+      font-weight: bold;
+    }
+
+    .card-description {
+      margin-top: 5px;
+
+      color: var(--muted);
+      font-size: 0.8rem;
+    }
+
+    .equipment-card {
+      grid-column: 1 / -1;
+
+      min-height: 90px;
+
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      gap: 12px;
+    }
+
+    .equipment-status {
+      display: flex;
+      align-items: center;
+
+      gap: 9px;
+
+      font-weight: bold;
+    }
+
+    .equipment-dot {
+      width: 14px;
+      height: 14px;
+
+      border-radius: 50%;
+
+      background: var(--green);
+    }
+
+    .equipment-dot.heating {
+      background: var(--orange);
+
+      box-shadow:
+        0 0 16px
+        rgba(251, 146, 60, 0.65);
+    }
+
+    .equipment-dot.cooling {
+      background: var(--blue);
+
+      box-shadow:
+        0 0 16px
+        rgba(96, 165, 250, 0.65);
+    }
+
+    .sensor-panel {
+      display: grid;
+
+      grid-template-columns:
+        1fr 1fr 1fr;
+
+      gap: 10px;
+
+      margin-top: 12px;
+      padding: 14px;
+
+      border-radius: 18px;
+      border: 1px solid var(--border);
+
+      background: var(--panel-dark);
+
+      text-align: center;
+    }
+
+    .sensor-reading + .sensor-reading {
+      border-left:
+        1px solid
+        var(--border);
+    }
+
+    .sensor-name {
+      color: var(--muted);
+
+      font-size: 0.68rem;
+
+      text-transform: uppercase;
+      letter-spacing: 0.09em;
+    }
+
+    .sensor-value {
+      margin-top: 6px;
+
+      font-weight: bold;
+    }
+
+    footer {
+      margin-top: 16px;
+
+      color: var(--muted);
+
+      font-size: 0.75rem;
+      line-height: 1.5;
+      text-align: center;
+    }
+
+    .error {
+      color: var(--red);
+    }
+
+    @media (max-width: 430px) {
+      .page {
+        padding:
+          13px 10px 24px;
+      }
+
+      .subtitle {
+        display: none;
+      }
+
+      .temperature-panel {
+        padding:
+          24px 10px;
+      }
+
+      .card {
+        padding: 14px;
+      }
+
+      .sensor-panel {
+        grid-template-columns:
+          1fr 1fr;
+      }
+
+      .sensor-panel
+      .sensor-reading:last-child {
+        grid-column: 1 / -1;
+
+        padding-top: 10px;
+
+        border-left: 0;
+        border-top:
+          1px solid
+          var(--border);
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <main class="page">
+
+    <header>
+
+      <div class="brand">
+
+        <div class="logo">
+          BS
+        </div>
+
+        <div>
+          <h1>BandyStat</h1>
+
+          <div class="subtitle">
+            Home Environmental Controller
+          </div>
+        </div>
+
+      </div>
+
+      <div class="connection">
+
+        <span
+          id="connectionDot"
+          class="connection-dot"
+        ></span>
+
+        <span id="connectionText">
+          Connecting
+        </span>
+
+      </div>
+
+    </header>
+
+    <section class="temperature-panel">
+
+      <div class="label">
+        Indoor temperature
+      </div>
+
+      <div class="temperature">
+
+        <span id="temperature">
+          --.-
+        </span>
+
+        <span class="temperature-unit">
+          °F
+        </span>
+
+      </div>
+
+      <div class="temperature-details">
+
+        <span>
+          Humidity
+          <strong id="humidity">
+            --%
+          </strong>
+        </span>
+
+        <span>
+          Set point
+          <strong id="setpoint">
+            --.-°F
+          </strong>
+        </span>
+
+      </div>
+
+    </section>
+
+    <section class="card-grid">
+
+      <article class="card">
+
+        <div class="label">
+          Mode
+        </div>
+
+        <div
+          id="mode"
+          class="card-value"
+        >
+          --
+        </div>
+
+        <div class="card-description">
+          Thermostat setting
+        </div>
+
+      </article>
+
+      <article class="card">
+
+        <div class="label">
+          Fan
+        </div>
+
+        <div
+          id="fan"
+          class="card-value"
+        >
+          --
+        </div>
+
+        <div class="card-description">
+          Blower selection
+        </div>
+
+      </article>
+
+      <article class="card equipment-card">
+
+        <div>
+
+          <div class="label">
+            Equipment
+          </div>
+
+          <div
+            id="equipment"
+            class="card-value"
+          >
+            --
+          </div>
+
+        </div>
+
+        <div class="equipment-status">
+
+          <span
+            id="equipmentDot"
+            class="equipment-dot"
+          ></span>
+
+          <span id="equipmentDetail">
+            Waiting
+          </span>
+
+        </div>
+
+      </article>
+
+    </section>
+
+    <section class="sensor-panel">
+
+      <div class="sensor-reading">
+
+        <div class="sensor-name">
+          Downstairs
+        </div>
+
+        <div
+          id="downstairsTemperature"
+          class="sensor-value"
+        >
+          --.-°F
+        </div>
+
+      </div>
+
+      <div class="sensor-reading">
+
+        <div class="sensor-name">
+          Upstairs
+        </div>
+
+        <div
+          id="upstairsTemperature"
+          class="sensor-value"
+        >
+          --.-°F
+        </div>
+
+      </div>
+
+      <div class="sensor-reading">
+
+        <div class="sensor-name">
+          Active sensor
+        </div>
+
+        <div
+          id="activeSensor"
+          class="sensor-value"
+        >
+          --
+        </div>
+
+      </div>
+
+    </section>
+
+    <footer>
+
+      <div id="lastUpdated">
+        Waiting for thermostat data...
+      </div>
+
+      <div id="errorMessage"></div>
+
+    </footer>
+
+  </main>
+
+  <script>
+    const STATUS_API =
+      "/arduino/status";
+
+    const UPDATE_INTERVAL_MS =
+      1000;
+
+    function getElement(id) {
+      return document.getElementById(id);
+    }
+
+    function formatNumber(
+      value,
+      decimalPlaces = 1
+    ) {
+      const number =
+        Number(value);
+
+      if (!Number.isFinite(number)) {
+        return "--";
+      }
+
+      return number.toFixed(
+        decimalPlaces
+      );
+    }
+
+    function setConnectionStatus(
+      isOnline
+    ) {
+      const connectionDot =
+        getElement(
+          "connectionDot"
+        );
+
+      const connectionText =
+        getElement(
+          "connectionText"
+        );
+
+      connectionDot.classList.toggle(
+        "online",
+        isOnline
+      );
+
+      connectionText.textContent =
+        isOnline
+          ? "Live"
+          : "Offline";
+    }
+
+    function getEquipmentDisplay(
+      equipmentValue
+    ) {
+      const equipment =
+        String(
+          equipmentValue || "IDLE"
+        ).toUpperCase();
+
+      if (
+        equipment.includes("HEAT")
+      ) {
+        return {
+          name: "Heating",
+          detail: "Heat running",
+          className: "heating"
+        };
+      }
+
+      if (
+        equipment.includes("COOL")
+      ) {
+        return {
+          name: "Cooling",
+          detail: "Cooling running",
+          className: "cooling"
+        };
+      }
+
+      return {
+        name: "Idle",
+        detail: "System ready",
+        className: ""
+      };
+    }
+
+    function updateDashboard(
+      data
+    ) {
+      getElement(
+        "temperature"
+      ).textContent =
+        formatNumber(
+          data.temperature,
+          1
+        );
+
+      getElement(
+        "humidity"
+      ).textContent =
+        formatNumber(
+          data.humidity,
+          0
+        ) + "%";
+
+      getElement(
+        "setpoint"
+      ).textContent =
+        formatNumber(
+          data.setpoint,
+          1
+        ) + "°F";
+
+      getElement(
+        "mode"
+      ).textContent =
+        String(
+          data.mode || "--"
+        ).toUpperCase();
+
+      getElement(
+        "fan"
+      ).textContent =
+        String(
+          data.fan || "--"
+        ).toUpperCase();
+
+      getElement(
+        "downstairsTemperature"
+      ).textContent =
+        formatNumber(
+          data.downstairsTemp,
+          1
+        ) + "°F";
+
+      getElement(
+        "upstairsTemperature"
+      ).textContent =
+        formatNumber(
+          data.upstairsTemp,
+          1
+        ) + "°F";
+
+      if (data.activeSensor) {
+        getElement(
+          "activeSensor"
+        ).textContent =
+          "Sensor " +
+          data.activeSensor;
+      } else {
+        getElement(
+          "activeSensor"
+        ).textContent =
+          "--";
+      }
+
+      const equipmentDisplay =
+        getEquipmentDisplay(
+          data.equipment
+        );
+
+      getElement(
+        "equipment"
+      ).textContent =
+        equipmentDisplay.name;
+
+      getElement(
+        "equipmentDetail"
+      ).textContent =
+        equipmentDisplay.detail;
+
+      getElement(
+        "equipmentDot"
+      ).className =
+        "equipment-dot " +
+        equipmentDisplay.className;
+
+      const errors = [];
+
+      if (data.sensor1Error) {
+        errors.push(
+          "Downstairs sensor error"
+        );
+      }
+
+      if (data.sensor2Error) {
+        errors.push(
+          "Upstairs sensor error"
+        );
+      }
+
+      const errorElement =
+        getElement(
+          "errorMessage"
+        );
+
+      errorElement.textContent =
+        errors.join(" • ");
+
+      errorElement.className =
+        errors.length
+          ? "error"
+          : "";
+
+      getElement(
+        "lastUpdated"
+      ).textContent =
+        "Updated " +
+        new Date()
+          .toLocaleTimeString();
+
+      setConnectionStatus(true);
+    }
+
+    async function refreshDashboard() {
+      try {
+        const response =
+          await fetch(
+            STATUS_API +
+            "?time=" +
+            Date.now(),
+            {
+              cache: "no-store"
+            }
+          );
+
+        if (!response.ok) {
+          throw new Error(
+            "HTTP " +
+            response.status
+          );
+        }
+
+        const thermostatData =
+          await response.json();
+
+        updateDashboard(
+          thermostatData
+        );
+      } catch (error) {
+        setConnectionStatus(false);
+
+        getElement(
+          "lastUpdated"
+        ).textContent =
+          "Thermostat connection lost";
+
+        const errorElement =
+          getElement(
+            "errorMessage"
+          );
+
+        errorElement.textContent =
+          error.message;
+
+        errorElement.className =
+          "error";
+      }
+    }
+
+    refreshDashboard();
+
+    setInterval(
+      refreshDashboard,
+      UPDATE_INTERVAL_MS
+    );
+  </script>
+
+</body>
+</html>
