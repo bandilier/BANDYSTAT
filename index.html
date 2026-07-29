@@ -1,866 +1,2369 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1, viewport-fit=cover"
-  >
-
-  <meta name="theme-color" content="#09101d">
-
-  <title>BandyStat</title>
-
-  <style>
-    :root {
-      color-scheme: dark;
-
-      --background: #09101d;
-      --background-bottom: #050914;
-
-      --panel: #151f31;
-      --panel-dark: #101827;
-
-      --text: #f8fafc;
-      --muted: #94a3b8;
-
-      --border: rgba(148, 163, 184, 0.16);
-
-      --green: #34d399;
-      --orange: #fb923c;
-      --blue: #60a5fa;
-      --red: #f87171;
-    }
+    <meta charset="UTF-8">
 
-    * {
-      box-sizing: border-box;
-    }
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    >
 
-    body {
-      margin: 0;
-      min-height: 100vh;
+    <meta name="theme-color" content="#07111f">
 
-      font-family:
-        Arial,
-        Helvetica,
-        sans-serif;
+    <title>BANDYSTAT</title>
 
-      color: var(--text);
+    <style>
+        :root {
+            color-scheme: dark;
 
-      background:
-        radial-gradient(
-          circle at top,
-          #1a2945 0,
-          transparent 38%
-        ),
-        linear-gradient(
-          var(--background),
-          var(--background-bottom)
-        );
-    }
+            --background: #07111f;
+            --background-dark: #040914;
 
-    .page {
-      width: min(760px, 100%);
-      margin: auto;
-      padding: 18px 14px 30px;
-    }
+            --panel: #122035;
+            --panel-light: #1c2d47;
+            --panel-dark: #0c1728;
 
-    header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+            --text: #f8fafc;
+            --muted: #94a3b8;
 
-      gap: 12px;
-      margin-bottom: 16px;
-    }
+            --border: rgba(148, 163, 184, 0.16);
 
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 11px;
-    }
+            --green: #34d399;
+            --blue: #60a5fa;
+            --orange: #fb923c;
+            --red: #f87171;
+            --yellow: #facc15;
 
-    .logo {
-      width: 46px;
-      height: 46px;
+            --shadow:
+                0 20px 55px rgba(0, 0, 0, 0.28);
+        }
 
-      display: grid;
-      place-items: center;
+        * {
+            box-sizing: border-box;
 
-      border-radius: 14px;
-      border: 1px solid var(--border);
+            -webkit-tap-highlight-color: transparent;
+        }
 
-      background:
-        linear-gradient(
-          145deg,
-          #293957,
-          #101827
-        );
+        html {
+            min-height: 100%;
 
-      font-weight: bold;
-    }
+            background: var(--background);
+        }
 
-    h1 {
-      margin: 0;
+        body {
+            min-height: 100vh;
 
-      font-size: 1.65rem;
-      letter-spacing: -1px;
-    }
+            margin: 0;
 
-    .subtitle {
-      margin-top: 2px;
+            color: var(--text);
 
-      color: var(--muted);
-      font-size: 0.82rem;
-    }
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
 
-    .connection {
-      display: flex;
-      align-items: center;
+            background:
+                radial-gradient(
+                    circle at top,
+                    rgba(48, 78, 125, 0.38),
+                    transparent 34rem
+                ),
+                linear-gradient(
+                    180deg,
+                    var(--background),
+                    var(--background-dark)
+                );
+        }
 
-      gap: 7px;
-      padding: 8px 10px;
+        button {
+            font: inherit;
+        }
 
-      border-radius: 999px;
-      border: 1px solid var(--border);
+        .app-shell {
+            width: min(900px, 100%);
 
-      background: var(--panel-dark);
+            margin: 0 auto;
 
-      color: var(--muted);
-      font-size: 0.78rem;
-    }
+            padding:
+                18px
+                14px
+                34px;
+        }
 
-    .connection-dot {
-      width: 9px;
-      height: 9px;
+        /* =====================================================
+           HEADER
+           ===================================================== */
 
-      border-radius: 50%;
+        .top-bar {
+            display: flex;
 
-      background: var(--red);
-    }
+            align-items: center;
+            justify-content: space-between;
 
-    .connection-dot.online {
-      background: var(--green);
+            gap: 16px;
 
-      box-shadow:
-        0 0 0 4px
-        rgba(52, 211, 153, 0.12);
-    }
+            margin-bottom: 16px;
+        }
 
-    .temperature-panel {
-      padding: 28px 18px;
+        .brand {
+            display: flex;
 
-      border-radius: 24px;
-      border: 1px solid var(--border);
+            align-items: center;
 
-      text-align: center;
+            gap: 12px;
+        }
 
-      background:
-        linear-gradient(
-          145deg,
-          #202d46,
-          #101827
-        );
+        .brand-logo {
+            display: grid;
 
-      box-shadow:
-        0 18px 45px
-        rgba(0, 0, 0, 0.28);
-    }
+            width: 48px;
+            height: 48px;
 
-    .label {
-      color: var(--muted);
+            place-items: center;
 
-      font-size: 0.72rem;
-      font-weight: bold;
+            border: 1px solid var(--border);
+            border-radius: 15px;
 
-      text-transform: uppercase;
-      letter-spacing: 0.14em;
-    }
+            background:
+                linear-gradient(
+                    145deg,
+                    #2a4368,
+                    #122036
+                );
 
-    .temperature {
-      margin: 5px 0 6px;
+            color: white;
 
-      font-size: clamp(5rem, 20vw, 8rem);
-      font-weight: 300;
-      line-height: 1;
+            font-size: 1rem;
+            font-weight: bold;
 
-      letter-spacing: -8px;
-    }
+            box-shadow:
+                0 10px 25px rgba(0, 0, 0, 0.25);
+        }
 
-    .temperature-unit {
-      margin-left: 5px;
+        .brand h1 {
+            margin: 0;
 
-      font-size: 0.34em;
-      vertical-align: top;
-      letter-spacing: 0;
-    }
+            font-size: 1.6rem;
+            letter-spacing: -0.05em;
+        }
 
-    .temperature-details {
-      display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
+        .brand p {
+            margin: 2px 0 0;
 
-      gap: 22px;
+            color: var(--muted);
 
-      color: var(--muted);
-    }
+            font-size: 0.78rem;
+        }
 
-    .temperature-details strong {
-      color: var(--text);
-    }
+        .connection-badge {
+            display: flex;
 
-    .card-grid {
-      display: grid;
+            align-items: center;
 
-      grid-template-columns:
-        1fr 1fr;
+            gap: 8px;
 
-      gap: 12px;
-      margin-top: 12px;
-    }
+            padding:
+                9px
+                12px;
 
-    .card {
-      min-height: 108px;
-      padding: 16px;
+            border: 1px solid var(--border);
+            border-radius: 999px;
 
-      border-radius: 19px;
-      border: 1px solid var(--border);
+            background:
+                rgba(10, 20, 34, 0.88);
 
-      background:
-        rgba(21, 31, 49, 0.94);
-    }
+            color: var(--muted);
 
-    .card-value {
-      margin-top: 12px;
+            font-size: 0.76rem;
+            font-weight: bold;
 
-      font-size: 1.75rem;
-      font-weight: bold;
-    }
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+        }
 
-    .card-description {
-      margin-top: 5px;
+        .connection-dot,
+        .banner-dot {
+            width: 10px;
+            height: 10px;
 
-      color: var(--muted);
-      font-size: 0.8rem;
-    }
+            border-radius: 50%;
 
-    .equipment-card {
-      grid-column: 1 / -1;
+            background: var(--red);
+        }
 
-      min-height: 90px;
+        .connection-badge.online .connection-dot {
+            background: var(--green);
 
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+            box-shadow:
+                0 0 0 4px rgba(52, 211, 153, 0.11);
+        }
 
-      gap: 12px;
-    }
+        /* =====================================================
+           NAVIGATION
+           ===================================================== */
 
-    .equipment-status {
-      display: flex;
-      align-items: center;
+        .navigation-tabs {
+            display: flex;
 
-      gap: 9px;
+            gap: 8px;
 
-      font-weight: bold;
-    }
+            overflow-x: auto;
 
-    .equipment-dot {
-      width: 14px;
-      height: 14px;
+            padding-bottom: 8px;
 
-      border-radius: 50%;
+            scrollbar-width: none;
+        }
 
-      background: var(--green);
-    }
+        .navigation-tabs::-webkit-scrollbar {
+            display: none;
+        }
 
-    .equipment-dot.heating {
-      background: var(--orange);
+        .navigation-button {
+            min-width: max-content;
 
-      box-shadow:
-        0 0 16px
-        rgba(251, 146, 60, 0.65);
-    }
+            padding:
+                10px
+                15px;
 
-    .equipment-dot.cooling {
-      background: var(--blue);
+            border: 1px solid var(--border);
+            border-radius: 13px;
 
-      box-shadow:
-        0 0 16px
-        rgba(96, 165, 250, 0.65);
-    }
+            background:
+                rgba(13, 25, 42, 0.9);
 
-    .sensor-panel {
-      display: grid;
+            color: var(--muted);
 
-      grid-template-columns:
-        1fr 1fr 1fr;
+            cursor: pointer;
+        }
 
-      gap: 10px;
+        .navigation-button.active {
+            border-color:
+                rgba(96, 165, 250, 0.55);
 
-      margin-top: 12px;
-      padding: 14px;
+            background:
+                rgba(96, 165, 250, 0.13);
 
-      border-radius: 18px;
-      border: 1px solid var(--border);
+            color: var(--text);
+        }
 
-      background: var(--panel-dark);
+        /* =====================================================
+           PAGES
+           ===================================================== */
 
-      text-align: center;
-    }
+        .page {
+            display: none;
+        }
 
-    .sensor-reading + .sensor-reading {
-      border-left:
-        1px solid
-        var(--border);
-    }
+        .page.active {
+            display: block;
+        }
 
-    .sensor-name {
-      color: var(--muted);
+        /* =====================================================
+           SYSTEM BANNER
+           ===================================================== */
 
-      font-size: 0.68rem;
+        .system-banner {
+            display: flex;
 
-      text-transform: uppercase;
-      letter-spacing: 0.09em;
-    }
+            min-height: 45px;
 
-    .sensor-value {
-      margin-top: 6px;
+            align-items: center;
+            justify-content: center;
 
-      font-weight: bold;
-    }
+            gap: 9px;
 
-    footer {
-      margin-top: 16px;
+            margin:
+                4px
+                0
+                12px;
 
-      color: var(--muted);
+            border: 1px solid var(--border);
+            border-radius: 15px;
 
-      font-size: 0.75rem;
-      line-height: 1.5;
-      text-align: center;
-    }
+            background:
+                rgba(15, 28, 47, 0.9);
 
-    .error {
-      color: var(--red);
-    }
+            color: var(--muted);
 
-    @media (max-width: 430px) {
-      .page {
-        padding:
-          13px 10px 24px;
-      }
+            font-weight: bold;
+        }
 
-      .subtitle {
-        display: none;
-      }
+        .system-banner.normal .banner-dot {
+            background: var(--green);
+        }
 
-      .temperature-panel {
-        padding:
-          24px 10px;
-      }
+        .system-banner.heating .banner-dot {
+            background: var(--orange);
+        }
 
-      .card {
-        padding: 14px;
-      }
+        .system-banner.cooling .banner-dot {
+            background: var(--blue);
+        }
 
-      .sensor-panel {
-        grid-template-columns:
-          1fr 1fr;
-      }
+        .system-banner.warning .banner-dot {
+            background: var(--yellow);
+        }
 
-      .sensor-panel
-      .sensor-reading:last-child {
-        grid-column: 1 / -1;
+        .system-banner.error .banner-dot {
+            background: var(--red);
+        }
 
-        padding-top: 10px;
+        /* =====================================================
+           MAIN THERMOSTAT CARD
+           ===================================================== */
 
-        border-left: 0;
-        border-top:
-          1px solid
-          var(--border);
-      }
-    }
-  </style>
+        .thermostat-card {
+            padding:
+                28px
+                18px
+                24px;
+
+            border: 1px solid var(--border);
+            border-radius: 26px;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    #21334f,
+                    #111d2f
+                );
+
+            box-shadow: var(--shadow);
+
+            text-align: center;
+        }
+
+        .eyebrow {
+            color: var(--muted);
+
+            font-size: 0.7rem;
+            font-weight: bold;
+
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+        }
+
+        .temperature-display {
+            margin:
+                5px
+                0
+                6px;
+
+            font-size:
+                clamp(
+                    5.3rem,
+                    19vw,
+                    8.2rem
+                );
+
+            font-weight: 300;
+
+            line-height: 1;
+            letter-spacing: -0.08em;
+        }
+
+        .temperature-display small {
+            margin-left: 6px;
+
+            font-size: 0.32em;
+
+            letter-spacing: normal;
+
+            vertical-align: top;
+        }
+
+        .temperature-information {
+            display: flex;
+
+            justify-content: center;
+
+            gap: 24px;
+
+            flex-wrap: wrap;
+
+            color: var(--muted);
+        }
+
+        .temperature-information strong {
+            color: var(--text);
+        }
+
+        /* =====================================================
+           SETPOINT CONTROL
+           ===================================================== */
+
+        .setpoint-control {
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            gap: 16px;
+
+            margin-top: 20px;
+        }
+
+        .setpoint-button {
+            width: 60px;
+            height: 52px;
+
+            border: 1px solid var(--border);
+            border-radius: 16px;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    #2c4162,
+                    #152239
+                );
+
+            color: var(--text);
+
+            font-size: 1.75rem;
+            font-weight: bold;
+
+            cursor: pointer;
+
+            box-shadow:
+                0 9px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .setpoint-button:active:not(:disabled) {
+            transform: translateY(1px);
+
+            box-shadow: none;
+        }
+
+        .setpoint-value {
+            min-width: 125px;
+        }
+
+        .setpoint-value strong {
+            display: block;
+
+            font-size: 2.1rem;
+        }
+
+        .setpoint-value span {
+            color: var(--muted);
+
+            font-size: 0.68rem;
+
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+        }
+
+        /* =====================================================
+           CONTROL PANELS
+           ===================================================== */
+
+        .control-grid,
+        .information-grid {
+            display: grid;
+
+            grid-template-columns:
+                1fr
+                1fr;
+
+            gap: 12px;
+
+            margin-top: 12px;
+        }
+
+        .panel,
+        .information-card,
+        .placeholder-card {
+            border: 1px solid var(--border);
+            border-radius: 20px;
+
+            background:
+                rgba(18, 31, 51, 0.94);
+        }
+
+        .panel {
+            padding: 16px;
+        }
+
+        .button-grid {
+            display: grid;
+
+            gap: 8px;
+
+            margin-top: 12px;
+        }
+
+        .button-grid.three-columns {
+            grid-template-columns:
+                repeat(3, 1fr);
+        }
+
+        .button-grid.two-columns {
+            grid-template-columns:
+                repeat(2, 1fr);
+        }
+
+        .control-button {
+            min-height: 48px;
+
+            border: 1px solid var(--border);
+            border-radius: 13px;
+
+            background: #0f1b2d;
+
+            color: var(--muted);
+
+            font-size: 0.78rem;
+            font-weight: bold;
+
+            letter-spacing: 0.05em;
+
+            cursor: pointer;
+        }
+
+        .control-button.active {
+            color: white;
+        }
+
+        .control-button.active.heat {
+            border-color:
+                rgba(251, 146, 60, 0.65);
+
+            background:
+                rgba(251, 146, 60, 0.25);
+        }
+
+        .control-button.active.cool {
+            border-color:
+                rgba(96, 165, 250, 0.65);
+
+            background:
+                rgba(96, 165, 250, 0.25);
+        }
+
+        .control-button.active.off {
+            border-color:
+                rgba(248, 113, 113, 0.55);
+
+            background:
+                rgba(248, 113, 113, 0.17);
+        }
+
+        .control-button.active.fan {
+            border-color:
+                rgba(52, 211, 153, 0.55);
+
+            background:
+                rgba(52, 211, 153, 0.16);
+        }
+
+        button:disabled {
+            opacity: 0.36;
+
+            cursor: not-allowed;
+        }
+
+        /* =====================================================
+           INFORMATION CARDS
+           ===================================================== */
+
+        .information-card {
+            min-height: 110px;
+
+            padding: 16px;
+        }
+
+        .information-card.wide {
+            grid-column:
+                1
+                /
+                -1;
+        }
+
+        .information-value {
+            margin-top: 11px;
+
+            font-size: 1.8rem;
+            font-weight: bold;
+        }
+
+        .information-note {
+            margin-top: 5px;
+
+            color: var(--muted);
+
+            font-size: 0.78rem;
+        }
+
+        .equipment-card {
+            display: flex;
+
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 14px;
+        }
+
+        .equipment-state {
+            display: flex;
+
+            align-items: center;
+
+            gap: 9px;
+
+            color: var(--muted);
+
+            font-weight: bold;
+        }
+
+        .equipment-dot {
+            width: 15px;
+            height: 15px;
+
+            border-radius: 50%;
+
+            background: var(--green);
+        }
+
+        .equipment-dot.heat {
+            background: var(--orange);
+
+            box-shadow:
+                0 0 16px rgba(251, 146, 60, 0.58);
+        }
+
+        .equipment-dot.cool {
+            background: var(--blue);
+
+            box-shadow:
+                0 0 16px rgba(96, 165, 250, 0.58);
+        }
+
+        /* =====================================================
+           SENSOR STRIP
+           ===================================================== */
+
+        .sensor-strip {
+            display: grid;
+
+            grid-template-columns:
+                repeat(3, 1fr);
+
+            margin-top: 12px;
+
+            padding: 15px;
+
+            border: 1px solid var(--border);
+            border-radius: 19px;
+
+            background:
+                rgba(10, 22, 38, 0.92);
+
+            text-align: center;
+        }
+
+        .sensor-strip > div + div {
+            border-left:
+                1px solid var(--border);
+        }
+
+        .sensor-strip span {
+            display: block;
+
+            color: var(--muted);
+
+            font-size: 0.68rem;
+
+            letter-spacing: 0.09em;
+            text-transform: uppercase;
+        }
+
+        .sensor-strip strong {
+            display: block;
+
+            margin-top: 7px;
+        }
+
+        /* =====================================================
+           COMMAND MESSAGE
+           ===================================================== */
+
+        .command-message {
+            display: flex;
+
+            min-height: 45px;
+
+            align-items: center;
+            justify-content: center;
+
+            margin-top: 12px;
+
+            padding:
+                12px
+                14px;
+
+            border: 1px solid transparent;
+            border-radius: 14px;
+
+            color: var(--muted);
+
+            font-size: 0.82rem;
+
+            text-align: center;
+        }
+
+        .command-message.success {
+            border-color:
+                rgba(52, 211, 153, 0.22);
+
+            background:
+                rgba(52, 211, 153, 0.08);
+
+            color: var(--green);
+        }
+
+        .command-message.error {
+            border-color:
+                rgba(248, 113, 113, 0.22);
+
+            background:
+                rgba(248, 113, 113, 0.08);
+
+            color: var(--red);
+        }
+
+        /* =====================================================
+           PLACEHOLDER PAGES
+           ===================================================== */
+
+        .placeholder-card {
+            min-height: 240px;
+
+            padding: 25px;
+        }
+
+        .placeholder-card h2 {
+            margin-top: 0;
+        }
+
+        .placeholder-card p {
+            color: var(--muted);
+
+            line-height: 1.55;
+        }
+
+        .diagnostic-list {
+            display: grid;
+
+            gap: 10px;
+
+            margin-top: 18px;
+        }
+
+        .diagnostic-list div {
+            display: flex;
+
+            justify-content: space-between;
+
+            gap: 20px;
+
+            padding:
+                13px
+                14px;
+
+            border: 1px solid var(--border);
+            border-radius: 13px;
+
+            background:
+                rgba(8, 18, 31, 0.66);
+        }
+
+        .diagnostic-list span {
+            color: var(--muted);
+        }
+
+        /* =====================================================
+           FOOTER
+           ===================================================== */
+
+        footer {
+            display: flex;
+
+            justify-content: center;
+
+            gap: 8px;
+
+            flex-wrap: wrap;
+
+            margin-top: 12px;
+
+            color: var(--muted);
+
+            font-size: 0.75rem;
+
+            text-align: center;
+        }
+
+        #footerError {
+            color: var(--red);
+        }
+
+        /* =====================================================
+           CONNECTION OVERLAY
+           ===================================================== */
+
+        .connection-overlay {
+            position: fixed;
+
+            inset: 0;
+
+            z-index: 100;
+
+            display: grid;
+
+            place-items: center;
+
+            padding: 24px;
+
+            background:
+                rgba(4, 9, 20, 0.78);
+
+            backdrop-filter: blur(9px);
+
+            transition:
+                opacity 0.2s ease,
+                visibility 0.2s ease;
+        }
+
+        .connection-overlay.hidden {
+            opacity: 0;
+
+            visibility: hidden;
+
+            pointer-events: none;
+        }
+
+        .connection-card {
+            width: min(350px, 100%);
+
+            padding:
+                30px
+                23px;
+
+            border: 1px solid var(--border);
+            border-radius: 25px;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    var(--panel-light),
+                    var(--panel-dark)
+                );
+
+            box-shadow: var(--shadow);
+
+            text-align: center;
+        }
+
+        .connection-card h2 {
+            margin: 0;
+
+            font-size: 1.2rem;
+        }
+
+        .connection-card p {
+            margin:
+                9px
+                0
+                0;
+
+            color: var(--muted);
+
+            line-height: 1.45;
+        }
+
+        .spinner {
+            width: 49px;
+            height: 49px;
+
+            margin:
+                0
+                auto
+                19px;
+
+            border:
+                4px solid
+                rgba(148, 163, 184, 0.18);
+
+            border-top-color: var(--blue);
+            border-radius: 50%;
+
+            animation:
+                spinner-rotation
+                0.9s
+                linear
+                infinite;
+        }
+
+        @keyframes spinner-rotation {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* =====================================================
+           RESPONSIVE LAYOUT
+           ===================================================== */
+
+        @media (max-width: 600px) {
+            .control-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 440px) {
+            .app-shell {
+                padding:
+                    13px
+                    10px
+                    28px;
+            }
+
+            .brand p {
+                display: none;
+            }
+
+            .brand h1 {
+                font-size: 1.35rem;
+            }
+
+            .brand-logo {
+                width: 43px;
+                height: 43px;
+            }
+
+            .thermostat-card {
+                padding:
+                    24px
+                    10px
+                    21px;
+            }
+
+            .sensor-strip {
+                grid-template-columns:
+                    1fr
+                    1fr;
+            }
+
+            .sensor-strip > div:last-child {
+                grid-column:
+                    1
+                    /
+                    -1;
+
+                margin-top: 12px;
+
+                padding-top: 12px;
+
+                border-top:
+                    1px solid var(--border);
+
+                border-left: 0;
+            }
+        }
+    </style>
 </head>
 
 <body>
 
-  <main class="page">
+    <!-- =====================================================
+         CONNECTION OVERLAY
+         ===================================================== -->
 
-    <header>
+    <div
+        id="connectionOverlay"
+        class="connection-overlay"
+    >
+        <div class="connection-card">
 
-      <div class="brand">
+            <div class="spinner"></div>
 
-        <div class="logo">
-          BS
+            <h2>
+                Connecting to BANDYSTAT…
+            </h2>
+
+            <p id="connectionOverlayText">
+                Waiting for the Arduino Yún and Wi-Fi connection.
+            </p>
+
         </div>
+    </div>
 
-        <div>
-          <h1>BandyStat</h1>
+    <!-- =====================================================
+         APPLICATION
+         ===================================================== -->
 
-          <div class="subtitle">
-            Home Environmental Controller
-          </div>
-        </div>
+    <div class="app-shell">
 
-      </div>
+        <header class="top-bar">
 
-      <div class="connection">
+            <div class="brand">
 
-        <span
-          id="connectionDot"
-          class="connection-dot"
-        ></span>
+                <div class="brand-logo">
+                    BS
+                </div>
 
-        <span id="connectionText">
-          Connecting
-        </span>
+                <div>
 
-      </div>
+                    <h1>
+                        BANDYSTAT
+                    </h1>
 
-    </header>
+                    <p>
+                        Home Environmental Controller
+                    </p>
 
-    <section class="temperature-panel">
+                </div>
 
-      <div class="label">
-        Indoor temperature
-      </div>
+            </div>
 
-      <div class="temperature">
+            <div
+                id="connectionBadge"
+                class="connection-badge"
+            >
 
-        <span id="temperature">
-          --.-
-        </span>
+                <span class="connection-dot"></span>
 
-        <span class="temperature-unit">
-          °F
-        </span>
+                <span id="connectionText">
+                    Connecting
+                </span>
 
-      </div>
+            </div>
 
-      <div class="temperature-details">
+        </header>
 
-        <span>
-          Humidity
-          <strong id="humidity">
-            --%
-          </strong>
-        </span>
+        <!-- =================================================
+             NAVIGATION
+             ================================================= -->
 
-        <span>
-          Set point
-          <strong id="setpoint">
-            --.-°F
-          </strong>
-        </span>
-
-      </div>
-
-    </section>
-
-    <section class="card-grid">
-
-      <article class="card">
-
-        <div class="label">
-          Mode
-        </div>
-
-        <div
-          id="mode"
-          class="card-value"
+        <nav
+            class="navigation-tabs"
+            aria-label="BANDYSTAT sections"
         >
-          --
-        </div>
 
-        <div class="card-description">
-          Thermostat setting
-        </div>
+            <button
+                class="navigation-button active"
+                data-page="thermostat"
+            >
+                Thermostat
+            </button>
 
-      </article>
+            <button
+                class="navigation-button"
+                data-page="pressure"
+            >
+                Pressure
+            </button>
 
-      <article class="card">
+            <button
+                class="navigation-button"
+                data-page="history"
+            >
+                History
+            </button>
 
-        <div class="label">
-          Fan
-        </div>
+            <button
+                class="navigation-button"
+                data-page="diagnostics"
+            >
+                Diagnostics
+            </button>
 
-        <div
-          id="fan"
-          class="card-value"
-        >
-          --
-        </div>
+            <button
+                class="navigation-button"
+                data-page="settings"
+            >
+                Settings
+            </button>
 
-        <div class="card-description">
-          Blower selection
-        </div>
+        </nav>
 
-      </article>
+        <main>
 
-      <article class="card equipment-card">
+            <!-- =============================================
+                 THERMOSTAT PAGE
+                 ============================================= -->
 
-        <div>
+            <section
+                id="page-thermostat"
+                class="page active"
+            >
 
-          <div class="label">
-            Equipment
-          </div>
+                <div
+                    id="systemBanner"
+                    class="system-banner normal"
+                >
 
-          <div
-            id="equipment"
-            class="card-value"
-          >
-            --
-          </div>
+                    <span class="banner-dot"></span>
 
-        </div>
+                    <span id="systemBannerText">
+                        System Normal
+                    </span>
 
-        <div class="equipment-status">
+                </div>
 
-          <span
-            id="equipmentDot"
-            class="equipment-dot"
-          ></span>
+                <section class="thermostat-card">
 
-          <span id="equipmentDetail">
-            Waiting
-          </span>
+                    <div class="eyebrow">
+                        Indoor temperature
+                    </div>
 
-        </div>
+                    <div class="temperature-display">
+
+                        <span id="temperature">
+                            --.-
+                        </span>
+
+                        <small>
+                            °F
+                        </small>
 
-      </article>
+                    </div>
 
-    </section>
+                    <div class="temperature-information">
 
-    <section class="sensor-panel">
+                        <span>
+                            Humidity
 
-      <div class="sensor-reading">
+                            <strong id="humidity">
+                                --%
+                            </strong>
+                        </span>
 
-        <div class="sensor-name">
-          Downstairs
-        </div>
+                        <span>
+                            Mode
 
-        <div
-          id="downstairsTemperature"
-          class="sensor-value"
-        >
-          --.-°F
-        </div>
+                            <strong id="heroMode">
+                                --
+                            </strong>
+                        </span>
+
+                    </div>
+
+                    <div class="setpoint-control">
+
+                        <button
+                            class="setpoint-button api-control"
+                            data-command="setpoint/down"
+                            aria-label="Lower setpoint"
+                        >
+                            −
+                        </button>
+
+                        <div class="setpoint-value">
 
-      </div>
+                            <strong id="setpoint">
+                                --.-°
+                            </strong>
 
-      <div class="sensor-reading">
+                            <span>
+                                Set point
+                            </span>
 
-        <div class="sensor-name">
-          Upstairs
-        </div>
+                        </div>
 
-        <div
-          id="upstairsTemperature"
-          class="sensor-value"
-        >
-          --.-°F
-        </div>
+                        <button
+                            class="setpoint-button api-control"
+                            data-command="setpoint/up"
+                            aria-label="Raise setpoint"
+                        >
+                            +
+                        </button>
 
-      </div>
+                    </div>
 
-      <div class="sensor-reading">
+                </section>
 
-        <div class="sensor-name">
-          Active sensor
-        </div>
+                <!-- =========================================
+                     MODE AND FAN CONTROLS
+                     ========================================= -->
 
-        <div
-          id="activeSensor"
-          class="sensor-value"
-        >
-          --
-        </div>
-
-      </div>
-
-    </section>
-
-    <footer>
-
-      <div id="lastUpdated">
-        Waiting for thermostat data...
-      </div>
-
-      <div id="errorMessage"></div>
-
-    </footer>
-
-  </main>
-
-  <script>
-    const STATUS_API =
-      "/arduino/status";
-
-    const UPDATE_INTERVAL_MS =
-      1000;
-
-    function getElement(id) {
-      return document.getElementById(id);
-    }
-
-    function formatNumber(
-      value,
-      decimalPlaces = 1
-    ) {
-      const number =
-        Number(value);
-
-      if (!Number.isFinite(number)) {
-        return "--";
-      }
-
-      return number.toFixed(
-        decimalPlaces
-      );
-    }
-
-    function setConnectionStatus(
-      isOnline
-    ) {
-      const connectionDot =
-        getElement(
-          "connectionDot"
-        );
-
-      const connectionText =
-        getElement(
-          "connectionText"
-        );
-
-      connectionDot.classList.toggle(
-        "online",
-        isOnline
-      );
-
-      connectionText.textContent =
-        isOnline
-          ? "Live"
-          : "Offline";
-    }
-
-    function getEquipmentDisplay(
-      equipmentValue
-    ) {
-      const equipment =
-        String(
-          equipmentValue || "IDLE"
-        ).toUpperCase();
-
-      if (
-        equipment.includes("HEAT")
-      ) {
-        return {
-          name: "Heating",
-          detail: "Heat running",
-          className: "heating"
-        };
-      }
-
-      if (
-        equipment.includes("COOL")
-      ) {
-        return {
-          name: "Cooling",
-          detail: "Cooling running",
-          className: "cooling"
-        };
-      }
-
-      return {
-        name: "Idle",
-        detail: "System ready",
-        className: ""
-      };
-    }
-
-    function updateDashboard(
-      data
-    ) {
-      getElement(
-        "temperature"
-      ).textContent =
-        formatNumber(
-          data.temperature,
-          1
-        );
-
-      getElement(
-        "humidity"
-      ).textContent =
-        formatNumber(
-          data.humidity,
-          0
-        ) + "%";
-
-      getElement(
-        "setpoint"
-      ).textContent =
-        formatNumber(
-          data.setpoint,
-          1
-        ) + "°F";
-
-      getElement(
-        "mode"
-      ).textContent =
-        String(
-          data.mode || "--"
-        ).toUpperCase();
-
-      getElement(
-        "fan"
-      ).textContent =
-        String(
-          data.fan || "--"
-        ).toUpperCase();
-
-      getElement(
-        "downstairsTemperature"
-      ).textContent =
-        formatNumber(
-          data.downstairsTemp,
-          1
-        ) + "°F";
-
-      getElement(
-        "upstairsTemperature"
-      ).textContent =
-        formatNumber(
-          data.upstairsTemp,
-          1
-        ) + "°F";
-
-      if (data.activeSensor) {
-        getElement(
-          "activeSensor"
-        ).textContent =
-          "Sensor " +
-          data.activeSensor;
-      } else {
-        getElement(
-          "activeSensor"
-        ).textContent =
-          "--";
-      }
-
-      const equipmentDisplay =
-        getEquipmentDisplay(
-          data.equipment
-        );
-
-      getElement(
-        "equipment"
-      ).textContent =
-        equipmentDisplay.name;
-
-      getElement(
-        "equipmentDetail"
-      ).textContent =
-        equipmentDisplay.detail;
-
-      getElement(
-        "equipmentDot"
-      ).className =
-        "equipment-dot " +
-        equipmentDisplay.className;
-
-      const errors = [];
-
-      if (data.sensor1Error) {
-        errors.push(
-          "Downstairs sensor error"
-        );
-      }
-
-      if (data.sensor2Error) {
-        errors.push(
-          "Upstairs sensor error"
-        );
-      }
-
-      const errorElement =
-        getElement(
-          "errorMessage"
-        );
-
-      errorElement.textContent =
-        errors.join(" • ");
-
-      errorElement.className =
-        errors.length
-          ? "error"
-          : "";
-
-      getElement(
-        "lastUpdated"
-      ).textContent =
-        "Updated " +
-        new Date()
-          .toLocaleTimeString();
-
-      setConnectionStatus(true);
-    }
-
-    async function refreshDashboard() {
-      try {
-        const response =
-          await fetch(
-            STATUS_API +
-            "?time=" +
-            Date.now(),
-            {
-              cache: "no-store"
-            }
-          );
-
-        if (!response.ok) {
-          throw new Error(
-            "HTTP " +
-            response.status
-          );
+                <section class="control-grid">
+
+                    <article class="panel">
+
+                        <div class="eyebrow">
+                            System mode
+                        </div>
+
+                        <div class="button-grid three-columns">
+
+                            <button
+                                id="modeHeat"
+                                class="control-button api-control"
+                                data-command="mode/heat"
+                            >
+                                HEAT
+                            </button>
+
+                            <button
+                                id="modeCool"
+                                class="control-button api-control"
+                                data-command="mode/cool"
+                            >
+                                COOL
+                            </button>
+
+                            <button
+                                id="modeOff"
+                                class="control-button api-control"
+                                data-command="mode/off"
+                            >
+                                OFF
+                            </button>
+
+                        </div>
+
+                    </article>
+
+                    <article class="panel">
+
+                        <div class="eyebrow">
+                            Blower fan
+                        </div>
+
+                        <div class="button-grid two-columns">
+
+                            <button
+                                id="fanAuto"
+                                class="control-button api-control"
+                                data-command="fan/auto"
+                            >
+                                AUTO
+                            </button>
+
+                            <button
+                                id="fanOn"
+                                class="control-button api-control"
+                                data-command="fan/on"
+                            >
+                                ON
+                            </button>
+
+                        </div>
+
+                    </article>
+
+                </section>
+
+                <!-- =========================================
+                     SYSTEM INFORMATION
+                     ========================================= -->
+
+                <section class="information-grid">
+
+                    <article class="information-card">
+
+                        <div class="eyebrow">
+                            Mode
+                        </div>
+
+                        <div
+                            id="modeValue"
+                            class="information-value"
+                        >
+                            --
+                        </div>
+
+                        <div class="information-note">
+                            Thermostat setting
+                        </div>
+
+                    </article>
+
+                    <article class="information-card">
+
+                        <div class="eyebrow">
+                            Fan
+                        </div>
+
+                        <div
+                            id="fanValue"
+                            class="information-value"
+                        >
+                            --
+                        </div>
+
+                        <div class="information-note">
+                            Blower selection
+                        </div>
+
+                    </article>
+
+                    <article
+                        class="
+                            information-card
+                            wide
+                            equipment-card
+                        "
+                    >
+
+                        <div>
+
+                            <div class="eyebrow">
+                                Equipment
+                            </div>
+
+                            <div
+                                id="equipmentValue"
+                                class="information-value"
+                            >
+                                --
+                            </div>
+
+                        </div>
+
+                        <div class="equipment-state">
+
+                            <span
+                                id="equipmentDot"
+                                class="equipment-dot"
+                            ></span>
+
+                            <span id="equipmentDetail">
+                                Waiting
+                            </span>
+
+                        </div>
+
+                    </article>
+
+                </section>
+
+                <!-- =========================================
+                     SENSOR INFORMATION
+                     ========================================= -->
+
+                <section class="sensor-strip">
+
+                    <div>
+
+                        <span>
+                            Downstairs
+                        </span>
+
+                        <strong id="downstairsTemperature">
+                            --.-°F
+                        </strong>
+
+                    </div>
+
+                    <div>
+
+                        <span>
+                            Upstairs
+                        </span>
+
+                        <strong id="upstairsTemperature">
+                            --.-°F
+                        </strong>
+
+                    </div>
+
+                    <div>
+
+                        <span>
+                            Active sensor
+                        </span>
+
+                        <strong id="activeSensor">
+                            --
+                        </strong>
+
+                    </div>
+
+                </section>
+
+                <div
+                    id="commandMessage"
+                    class="command-message"
+                >
+                    Controls will unlock when BANDYSTAT connects.
+                </div>
+
+            </section>
+
+            <!-- =============================================
+                 PRESSURE PAGE
+                 ============================================= -->
+
+            <section
+                id="page-pressure"
+                class="page"
+            >
+
+                <article class="placeholder-card">
+
+                    <h2>
+                        Pressure Controller
+                    </h2>
+
+                    <p>
+                        This page is ready for house pressure,
+                        fan speed, runtime, starts, outdoor
+                        conditions, and pressure graphs.
+                    </p>
+
+                </article>
+
+            </section>
+
+            <!-- =============================================
+                 HISTORY PAGE
+                 ============================================= -->
+
+            <section
+                id="page-history"
+                class="page"
+            >
+
+                <article class="placeholder-card">
+
+                    <h2>
+                        History
+                    </h2>
+
+                    <p>
+                        This page is ready for temperature,
+                        humidity, equipment, and pressure history.
+                    </p>
+
+                </article>
+
+            </section>
+
+            <!-- =============================================
+                 DIAGNOSTICS PAGE
+                 ============================================= -->
+
+            <section
+                id="page-diagnostics"
+                class="page"
+            >
+
+                <article class="placeholder-card">
+
+                    <h2>
+                        Diagnostics
+                    </h2>
+
+                    <div class="diagnostic-list">
+
+                        <div>
+
+                            <span>
+                                Controller
+                            </span>
+
+                            <strong id="diagnosticController">
+                                Offline
+                            </strong>
+
+                        </div>
+
+                        <div>
+
+                            <span>
+                                Sensor 1
+                            </span>
+
+                            <strong id="diagnosticSensor1">
+                                Unknown
+                            </strong>
+
+                        </div>
+
+                        <div>
+
+                            <span>
+                                Sensor 2
+                            </span>
+
+                            <strong id="diagnosticSensor2">
+                                Unknown
+                            </strong>
+
+                        </div>
+
+                        <div>
+
+                            <span>
+                                Last update
+                            </span>
+
+                            <strong id="diagnosticUpdated">
+                                Never
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+                </article>
+
+            </section>
+
+            <!-- =============================================
+                 SETTINGS PAGE
+                 ============================================= -->
+
+            <section
+                id="page-settings"
+                class="page"
+            >
+
+                <article class="placeholder-card">
+
+                    <h2>
+                        Settings
+                    </h2>
+
+                    <p>
+                        Thermostat limits, calibration,
+                        fan tuning, and pressure settings
+                        will be added here.
+                    </p>
+
+                </article>
+
+            </section>
+
+        </main>
+
+        <footer>
+
+            <span id="lastUpdated">
+                Waiting for thermostat data…
+            </span>
+
+            <span id="footerError"></span>
+
+        </footer>
+
+    </div>
+
+    <script>
+        /*
+         * =====================================================
+         * BANDYSTAT WEB APPLICATION
+         * =====================================================
+         *
+         * Required Arduino Yún endpoints:
+         *
+         * /arduino/status
+         *
+         * /arduino/setpoint/up
+         * /arduino/setpoint/down
+         *
+         * /arduino/mode/heat
+         * /arduino/mode/cool
+         * /arduino/mode/off
+         *
+         * /arduino/fan/auto
+         * /arduino/fan/on
+         *
+         * =====================================================
+         */
+
+        const STATUS_URL =
+            "/arduino/status";
+
+        const COMMAND_BASE_URL =
+            "/arduino/";
+
+        const REFRESH_INTERVAL_MS =
+            1000;
+
+        const REQUEST_TIMEOUT_MS =
+            900;
+
+        const controls =
+            Array.from(
+                document.querySelectorAll(
+                    ".api-control"
+                )
+            );
+
+        let controllerOnline =
+            false;
+
+        let refreshInProgress =
+            false;
+
+        let commandInProgress =
+            false;
+
+        let hasConnectedBefore =
+            false;
+
+        let commandMessageTimer =
+            null;
+
+        /*
+         * =====================================================
+         * ELEMENT HELPER
+         * =====================================================
+         */
+
+        function getElement(id) {
+            return document.getElementById(id);
         }
 
-        const thermostatData =
-          await response.json();
+        /*
+         * =====================================================
+         * FORMAT NUMERIC VALUE
+         * =====================================================
+         */
 
-        updateDashboard(
-          thermostatData
+        function formatNumber(
+            value,
+            decimalPlaces
+        ) {
+            const numericValue =
+                Number(value);
+
+            if (
+                !Number.isFinite(
+                    numericValue
+                )
+            ) {
+                return "--";
+            }
+
+            return numericValue.toFixed(
+                decimalPlaces
+            );
+        }
+
+        /*
+         * =====================================================
+         * ENABLE OR DISABLE CONTROLS
+         * =====================================================
+         */
+
+        function updateControlAvailability() {
+            const controlsEnabled =
+                controllerOnline &&
+                !commandInProgress;
+
+            controls.forEach(
+                function (button) {
+                    button.disabled =
+                        !controlsEnabled;
+                }
+            );
+        }
+
+        /*
+         * =====================================================
+         * CONNECTION DISPLAY
+         * =====================================================
+         */
+
+        function setConnectionState(
+            isOnline
+        ) {
+            controllerOnline =
+                isOnline;
+
+            const badge =
+                getElement(
+                    "connectionBadge"
+                );
+
+            const overlay =
+                getElement(
+                    "connectionOverlay"
+                );
+
+            const overlayText =
+                getElement(
+                    "connectionOverlayText"
+                );
+
+            badge.className =
+                "connection-badge " +
+                (
+                    isOnline
+                        ? "online"
+                        : ""
+                );
+
+            getElement(
+                "connectionText"
+            ).textContent =
+                isOnline
+                    ? "Online"
+                    : "Offline";
+
+            overlay.classList.toggle(
+                "hidden",
+                isOnline
+            );
+
+            getElement(
+                "diagnosticController"
+            ).textContent =
+                isOnline
+                    ? "Online"
+                    : "Offline";
+
+            if (!isOnline) {
+                overlayText.textContent =
+                    hasConnectedBefore
+                        ? "Connection lost. BANDYSTAT will reconnect automatically."
+                        : "Waiting for the Arduino Yún and Wi-Fi connection.";
+            }
+
+            if (isOnline) {
+                hasConnectedBefore =
+                    true;
+            }
+
+            updateControlAvailability();
+        }
+
+        /*
+         * =====================================================
+         * COMMAND MESSAGE
+         * =====================================================
+         */
+
+        function showCommandMessage(
+            message,
+            messageType
+        ) {
+            clearTimeout(
+                commandMessageTimer
+            );
+
+            const messageBox =
+                getElement(
+                    "commandMessage"
+                );
+
+            messageBox.textContent =
+                message;
+
+            messageBox.className =
+                "command-message";
+
+            if (messageType) {
+                messageBox.classList.add(
+                    messageType
+                );
+            }
+
+            if (messageType) {
+                commandMessageTimer =
+                    setTimeout(
+                        function () {
+                            messageBox.textContent =
+                                controllerOnline
+                                    ? "BANDYSTAT is online and ready."
+                                    : "Reconnecting to BANDYSTAT…";
+
+                            messageBox.className =
+                                "command-message";
+                        },
+                        2800
+                    );
+            }
+        }
+
+        /*
+         * =====================================================
+         * HTTP REQUEST
+         * =====================================================
+         */
+
+        async function requestJson(url) {
+            const abortController =
+                new AbortController();
+
+            const timeout =
+                setTimeout(
+                    function () {
+                        abortController.abort();
+                    },
+                    REQUEST_TIMEOUT_MS
+                );
+
+            try {
+                const separator =
+                    url.includes("?")
+                        ? "&"
+                        : "?";
+
+                const response =
+                    await fetch(
+                        url +
+                        separator +
+                        "time=" +
+                        Date.now(),
+                        {
+                            cache: "no-store",
+
+                            signal:
+                                abortController.signal
+                        }
+                    );
+
+                if (!response.ok) {
+                    throw new Error(
+                        "HTTP " +
+                        response.status
+                    );
+                }
+
+                return await response.json();
+            }
+            finally {
+                clearTimeout(timeout);
+            }
+        }
+
+        /*
+         * =====================================================
+         * CONTROL BUTTON APPEARANCE
+         * =====================================================
+         */
+
+        function updateControlButton(
+            buttonId,
+            isActive,
+            activeClass
+        ) {
+            const button =
+                getElement(buttonId);
+
+            button.className =
+                "control-button api-control";
+
+            if (isActive) {
+                button.classList.add(
+                    "active",
+                    activeClass
+                );
+            }
+        }
+
+        /*
+         * =====================================================
+         * EQUIPMENT INFORMATION
+         * =====================================================
+         */
+
+        function getEquipmentInformation(
+            equipmentValue
+        ) {
+            const equipment =
+                String(
+                    equipmentValue ||
+                    "IDLE"
+                ).toUpperCase();
+
+            if (
+                equipment.includes(
+                    "HEAT"
+                )
+            ) {
+                return {
+                    title:
+                        "Heating",
+
+                    detail:
+                        "Heat running",
+
+                    dotClass:
+                        "heat",
+
+                    bannerText:
+                        "Heating",
+
+                    bannerClass:
+                        "heating"
+                };
+            }
+
+            if (
+                equipment.includes(
+                    "COOL"
+                )
+            ) {
+                return {
+                    title:
+                        "Cooling",
+
+                    detail:
+                        "Cooling running",
+
+                    dotClass:
+                        "cool",
+
+                    bannerText:
+                        "Cooling",
+
+                    bannerClass:
+                        "cooling"
+                };
+            }
+
+            return {
+                title:
+                    "Idle",
+
+                detail:
+                    "System ready",
+
+                dotClass:
+                    "",
+
+                bannerText:
+                    "System Normal",
+
+                bannerClass:
+                    "normal"
+            };
+        }
+
+        /*
+         * =====================================================
+         * DISPLAY THERMOSTAT DATA
+         * =====================================================
+         */
+
+        function displayThermostatData(
+            data
+        ) {
+            getElement(
+                "temperature"
+            ).textContent =
+                formatNumber(
+                    data.temperature,
+                    1
+                );
+
+            getElement(
+                "humidity"
+            ).textContent =
+                formatNumber(
+                    data.humidity,
+                    0
+                ) +
+                "%";
+
+            getElement(
+                "setpoint"
+            ).textContent =
+                formatNumber(
+                    data.setpoint,
+                    1
+                ) +
+                "°";
+
+            const mode =
+                String(
+                    data.mode ||
+                    "--"
+                ).toUpperCase();
+
+            const fan =
+                String(
+                    data.fan ||
+                    "--"
+                ).toUpperCase();
+
+            getElement(
+                "heroMode"
+            ).textContent =
+                mode;
+
+            getElement(
+                "modeValue"
+            ).textContent =
+                mode;
+
+            getElement(
+                "fanValue"
+            ).textContent =
+                fan;
+
+            getElement(
+                "downstairsTemperature"
+            ).textContent =
+                formatNumber(
+                    data.downstairsTemp,
+                    1
+                ) +
+                "°F";
+
+            getElement(
+                "upstairsTemperature"
+            ).textContent =
+                formatNumber(
+                    data.upstairsTemp,
+                    1
+                ) +
+                "°F";
+
+            getElement(
+                "activeSensor"
+            ).textContent =
+                data.activeSensor
+                    ? "Sensor " +
+                      data.activeSensor
+                    : "--";
+
+            updateControlButton(
+                "modeHeat",
+                mode === "HEAT",
+                "heat"
+            );
+
+            updateControlButton(
+                "modeCool",
+                mode === "COOL",
+                "cool"
+            );
+
+            updateControlButton(
+                "modeOff",
+                mode === "OFF",
+                "off"
+            );
+
+            updateControlButton(
+                "fanAuto",
+                fan === "AUTO",
+                "fan"
+            );
+
+            updateControlButton(
+                "fanOn",
+                fan === "ON",
+                "fan"
+            );
+
+            const equipment =
+                getEquipmentInformation(
+                    data.equipment
+                );
+
+            getElement(
+                "equipmentValue"
+            ).textContent =
+                equipment.title;
+
+            getElement(
+                "equipmentDetail"
+            ).textContent =
+                equipment.detail;
+
+            getElement(
+                "equipmentDot"
+            ).className =
+                "equipment-dot " +
+                equipment.dotClass;
+
+            getElement(
+                "systemBannerText"
+            ).textContent =
+                equipment.bannerText;
+
+            getElement(
+                "systemBanner"
+            ).className =
+                "system-banner " +
+                equipment.bannerClass;
+
+            getElement(
+                "diagnosticSensor1"
+            ).textContent =
+                data.sensor1Error
+                    ? "Error"
+                    : "OK";
+
+            getElement(
+                "diagnosticSensor2"
+            ).textContent =
+                data.sensor2Error
+                    ? "Error"
+                    : "OK";
+        }
+
+        /*
+         * =====================================================
+         * READ CURRENT STATUS
+         * =====================================================
+         */
+
+        async function refreshStatus() {
+            if (
+                refreshInProgress ||
+                commandInProgress
+            ) {
+                return;
+            }
+
+            refreshInProgress =
+                true;
+
+            try {
+                const data =
+                    await requestJson(
+                        STATUS_URL
+                    );
+
+                displayThermostatData(
+                    data
+                );
+
+                setConnectionState(
+                    true
+                );
+
+                const currentTime =
+                    new Date()
+                        .toLocaleTimeString();
+
+                getElement(
+                    "lastUpdated"
+                ).textContent =
+                    "Updated " +
+                    currentTime;
+
+                getElement(
+                    "diagnosticUpdated"
+                ).textContent =
+                    currentTime;
+
+                getElement(
+                    "footerError"
+                ).textContent =
+                    "";
+
+                if (
+                    getElement(
+                        "commandMessage"
+                    ).textContent.includes(
+                        "unlock"
+                    )
+                ) {
+                    showCommandMessage(
+                        "BANDYSTAT is online and ready."
+                    );
+                }
+            }
+            catch (error) {
+                setConnectionState(
+                    false
+                );
+
+                getElement(
+                    "lastUpdated"
+                ).textContent =
+                    "Thermostat connection lost";
+
+                getElement(
+                    "footerError"
+                ).textContent =
+                    error.name ===
+                    "AbortError"
+                        ? "Controller did not respond"
+                        : "Trying to reconnect";
+
+                showCommandMessage(
+                    "Reconnecting to BANDYSTAT…"
+                );
+            }
+            finally {
+                refreshInProgress =
+                    false;
+            }
+        }
+
+        /*
+         * =====================================================
+         * SEND CONTROL COMMAND
+         * =====================================================
+         */
+
+        async function sendCommand(
+            command
+        ) {
+            if (
+                !controllerOnline ||
+                commandInProgress
+            ) {
+                return;
+            }
+
+            commandInProgress =
+                true;
+
+            updateControlAvailability();
+
+            showCommandMessage(
+                "Sending command…"
+            );
+
+            try {
+                const result =
+                    await requestJson(
+                        COMMAND_BASE_URL +
+                        command
+                    );
+
+                if (
+                    result.success ===
+                    false
+                ) {
+                    throw new Error(
+                        result.error ||
+                        "Command rejected"
+                    );
+                }
+
+                showCommandMessage(
+                    result.message ||
+                    "Command accepted",
+                    "success"
+                );
+
+                await new Promise(
+                    function (resolve) {
+                        setTimeout(
+                            resolve,
+                            120
+                        );
+                    }
+                );
+
+                await refreshStatus();
+            }
+            catch (error) {
+                showCommandMessage(
+                    error.name ===
+                    "AbortError"
+                        ? "Command timed out"
+                        : "Command failed: " +
+                          error.message,
+                    "error"
+                );
+
+                await refreshStatus();
+            }
+            finally {
+                commandInProgress =
+                    false;
+
+                updateControlAvailability();
+            }
+        }
+
+        /*
+         * =====================================================
+         * CONTROL BUTTON EVENTS
+         * =====================================================
+         */
+
+        controls.forEach(
+            function (button) {
+                button.addEventListener(
+                    "click",
+                    function () {
+                        sendCommand(
+                            button.dataset.command
+                        );
+                    }
+                );
+            }
         );
-      } catch (error) {
-        setConnectionStatus(false);
 
-        getElement(
-          "lastUpdated"
-        ).textContent =
-          "Thermostat connection lost";
+        /*
+         * =====================================================
+         * PAGE NAVIGATION
+         * =====================================================
+         */
 
-        const errorElement =
-          getElement(
-            "errorMessage"
-          );
+        document
+            .querySelectorAll(
+                ".navigation-button"
+            )
+            .forEach(
+                function (button) {
+                    button.addEventListener(
+                        "click",
+                        function () {
+                            const selectedPage =
+                                button.dataset.page;
 
-        errorElement.textContent =
-          error.message;
+                            document
+                                .querySelectorAll(
+                                    ".navigation-button"
+                                )
+                                .forEach(
+                                    function (
+                                        navigationButton
+                                    ) {
+                                        navigationButton
+                                            .classList
+                                            .toggle(
+                                                "active",
+                                                navigationButton ===
+                                                button
+                                            );
+                                    }
+                                );
 
-        errorElement.className =
-          "error";
-      }
-    }
+                            document
+                                .querySelectorAll(
+                                    ".page"
+                                )
+                                .forEach(
+                                    function (page) {
+                                        page
+                                            .classList
+                                            .toggle(
+                                                "active",
+                                                page.id ===
+                                                "page-" +
+                                                selectedPage
+                                            );
+                                    }
+                                );
+                        }
+                    );
+                }
+            );
 
-    refreshDashboard();
+        /*
+         * =====================================================
+         * APPLICATION STARTUP
+         * =====================================================
+         */
 
-    setInterval(
-      refreshDashboard,
-      UPDATE_INTERVAL_MS
-    );
-  </script>
+        setConnectionState(
+            false
+        );
+
+        refreshStatus();
+
+        setInterval(
+            refreshStatus,
+            REFRESH_INTERVAL_MS
+        );
+    </script>
 
 </body>
 </html>
