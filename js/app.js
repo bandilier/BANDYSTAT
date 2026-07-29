@@ -338,5 +338,8 @@ el("clearPressureLog").addEventListener("click",()=>{
 setConnectionState(false,true);
 refreshStatus(true);
 refreshPressure();
-setInterval(()=>refreshStatus(false),REFRESH_INTERVAL_MS);
-setInterval(refreshPressure,REFRESH_INTERVAL_MS);
+
+setInterval(()=>{
+    refreshStatus(false);
+    refreshPressure();
+},REFRESH_INTERVAL_MS);
