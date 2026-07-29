@@ -1,7 +1,7 @@
 const STATUS_URL="http://192.168.50.225/arduino/status";
 const COMMAND_BASE_URL="http://192.168.50.225/arduino/";
 const PRESSURE_STATUS_URL="http://192.168.50.51/pressure/pressure.php"
-const REFRESH_INTERVAL_MS=2000;
+const REFRESH_INTERVAL_MS=1000;
 const REQUEST_TIMEOUT_MS=8000;
 
 const controls=[...document.querySelectorAll(".api-control")];
