@@ -1,2369 +1,729 @@
-<!DOCTYPE html>
+<!-- BANDYSTAT working pressure version -->
+
+html = r'''<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0, viewport-fit=cover"
-    >
-
-    <meta name="theme-color" content="#07111f">
-
-    <title>BANDYSTAT</title>
-
-    <style>
-        :root {
-            color-scheme: dark;
-
-            --background: #07111f;
-            --background-dark: #040914;
-
-            --panel: #122035;
-            --panel-light: #1c2d47;
-            --panel-dark: #0c1728;
-
-            --text: #f8fafc;
-            --muted: #94a3b8;
-
-            --border: rgba(148, 163, 184, 0.16);
-
-            --green: #34d399;
-            --blue: #60a5fa;
-            --orange: #fb923c;
-            --red: #f87171;
-            --yellow: #facc15;
-
-            --shadow:
-                0 20px 55px rgba(0, 0, 0, 0.28);
-        }
-
-        * {
-            box-sizing: border-box;
-
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        html {
-            min-height: 100%;
-
-            background: var(--background);
-        }
-
-        body {
-            min-height: 100vh;
-
-            margin: 0;
-
-            color: var(--text);
-
-            font-family:
-                Arial,
-                Helvetica,
-                sans-serif;
-
-            background:
-                radial-gradient(
-                    circle at top,
-                    rgba(48, 78, 125, 0.38),
-                    transparent 34rem
-                ),
-                linear-gradient(
-                    180deg,
-                    var(--background),
-                    var(--background-dark)
-                );
-        }
-
-        button {
-            font: inherit;
-        }
-
-        .app-shell {
-            width: min(900px, 100%);
-
-            margin: 0 auto;
-
-            padding:
-                18px
-                14px
-                34px;
-        }
-
-        /* =====================================================
-           HEADER
-           ===================================================== */
-
-        .top-bar {
-            display: flex;
-
-            align-items: center;
-            justify-content: space-between;
-
-            gap: 16px;
-
-            margin-bottom: 16px;
-        }
-
-        .brand {
-            display: flex;
-
-            align-items: center;
-
-            gap: 12px;
-        }
-
-        .brand-logo {
-            display: grid;
-
-            width: 48px;
-            height: 48px;
-
-            place-items: center;
-
-            border: 1px solid var(--border);
-            border-radius: 15px;
-
-            background:
-                linear-gradient(
-                    145deg,
-                    #2a4368,
-                    #122036
-                );
-
-            color: white;
-
-            font-size: 1rem;
-            font-weight: bold;
-
-            box-shadow:
-                0 10px 25px rgba(0, 0, 0, 0.25);
-        }
-
-        .brand h1 {
-            margin: 0;
-
-            font-size: 1.6rem;
-            letter-spacing: -0.05em;
-        }
-
-        .brand p {
-            margin: 2px 0 0;
-
-            color: var(--muted);
-
-            font-size: 0.78rem;
-        }
-
-        .connection-badge {
-            display: flex;
-
-            align-items: center;
-
-            gap: 8px;
-
-            padding:
-                9px
-                12px;
-
-            border: 1px solid var(--border);
-            border-radius: 999px;
-
-            background:
-                rgba(10, 20, 34, 0.88);
-
-            color: var(--muted);
-
-            font-size: 0.76rem;
-            font-weight: bold;
-
-            letter-spacing: 0.06em;
-            text-transform: uppercase;
-        }
-
-        .connection-dot,
-        .banner-dot {
-            width: 10px;
-            height: 10px;
-
-            border-radius: 50%;
-
-            background: var(--red);
-        }
-
-        .connection-badge.online .connection-dot {
-            background: var(--green);
-
-            box-shadow:
-                0 0 0 4px rgba(52, 211, 153, 0.11);
-        }
-
-        /* =====================================================
-           NAVIGATION
-           ===================================================== */
-
-        .navigation-tabs {
-            display: flex;
-
-            gap: 8px;
-
-            overflow-x: auto;
-
-            padding-bottom: 8px;
-
-            scrollbar-width: none;
-        }
-
-        .navigation-tabs::-webkit-scrollbar {
-            display: none;
-        }
-
-        .navigation-button {
-            min-width: max-content;
-
-            padding:
-                10px
-                15px;
-
-            border: 1px solid var(--border);
-            border-radius: 13px;
-
-            background:
-                rgba(13, 25, 42, 0.9);
-
-            color: var(--muted);
-
-            cursor: pointer;
-        }
-
-        .navigation-button.active {
-            border-color:
-                rgba(96, 165, 250, 0.55);
-
-            background:
-                rgba(96, 165, 250, 0.13);
-
-            color: var(--text);
-        }
-
-        /* =====================================================
-           PAGES
-           ===================================================== */
-
-        .page {
-            display: none;
-        }
-
-        .page.active {
-            display: block;
-        }
-
-        /* =====================================================
-           SYSTEM BANNER
-           ===================================================== */
-
-        .system-banner {
-            display: flex;
-
-            min-height: 45px;
-
-            align-items: center;
-            justify-content: center;
-
-            gap: 9px;
-
-            margin:
-                4px
-                0
-                12px;
-
-            border: 1px solid var(--border);
-            border-radius: 15px;
-
-            background:
-                rgba(15, 28, 47, 0.9);
-
-            color: var(--muted);
-
-            font-weight: bold;
-        }
-
-        .system-banner.normal .banner-dot {
-            background: var(--green);
-        }
-
-        .system-banner.heating .banner-dot {
-            background: var(--orange);
-        }
-
-        .system-banner.cooling .banner-dot {
-            background: var(--blue);
-        }
-
-        .system-banner.warning .banner-dot {
-            background: var(--yellow);
-        }
-
-        .system-banner.error .banner-dot {
-            background: var(--red);
-        }
-
-        /* =====================================================
-           MAIN THERMOSTAT CARD
-           ===================================================== */
-
-        .thermostat-card {
-            padding:
-                28px
-                18px
-                24px;
-
-            border: 1px solid var(--border);
-            border-radius: 26px;
-
-            background:
-                linear-gradient(
-                    145deg,
-                    #21334f,
-                    #111d2f
-                );
-
-            box-shadow: var(--shadow);
-
-            text-align: center;
-        }
-
-        .eyebrow {
-            color: var(--muted);
-
-            font-size: 0.7rem;
-            font-weight: bold;
-
-            letter-spacing: 0.14em;
-            text-transform: uppercase;
-        }
-
-        .temperature-display {
-            margin:
-                5px
-                0
-                6px;
-
-            font-size:
-                clamp(
-                    5.3rem,
-                    19vw,
-                    8.2rem
-                );
-
-            font-weight: 300;
-
-            line-height: 1;
-            letter-spacing: -0.08em;
-        }
-
-        .temperature-display small {
-            margin-left: 6px;
-
-            font-size: 0.32em;
-
-            letter-spacing: normal;
-
-            vertical-align: top;
-        }
-
-        .temperature-information {
-            display: flex;
-
-            justify-content: center;
-
-            gap: 24px;
-
-            flex-wrap: wrap;
-
-            color: var(--muted);
-        }
-
-        .temperature-information strong {
-            color: var(--text);
-        }
-
-        /* =====================================================
-           SETPOINT CONTROL
-           ===================================================== */
-
-        .setpoint-control {
-            display: flex;
-
-            align-items: center;
-            justify-content: center;
-
-            gap: 16px;
-
-            margin-top: 20px;
-        }
-
-        .setpoint-button {
-            width: 60px;
-            height: 52px;
-
-            border: 1px solid var(--border);
-            border-radius: 16px;
-
-            background:
-                linear-gradient(
-                    145deg,
-                    #2c4162,
-                    #152239
-                );
-
-            color: var(--text);
-
-            font-size: 1.75rem;
-            font-weight: bold;
-
-            cursor: pointer;
-
-            box-shadow:
-                0 9px 20px rgba(0, 0, 0, 0.2);
-        }
-
-        .setpoint-button:active:not(:disabled) {
-            transform: translateY(1px);
-
-            box-shadow: none;
-        }
-
-        .setpoint-value {
-            min-width: 125px;
-        }
-
-        .setpoint-value strong {
-            display: block;
-
-            font-size: 2.1rem;
-        }
-
-        .setpoint-value span {
-            color: var(--muted);
-
-            font-size: 0.68rem;
-
-            letter-spacing: 0.12em;
-            text-transform: uppercase;
-        }
-
-        /* =====================================================
-           CONTROL PANELS
-           ===================================================== */
-
-        .control-grid,
-        .information-grid {
-            display: grid;
-
-            grid-template-columns:
-                1fr
-                1fr;
-
-            gap: 12px;
-
-            margin-top: 12px;
-        }
-
-        .panel,
-        .information-card,
-        .placeholder-card {
-            border: 1px solid var(--border);
-            border-radius: 20px;
-
-            background:
-                rgba(18, 31, 51, 0.94);
-        }
-
-        .panel {
-            padding: 16px;
-        }
-
-        .button-grid {
-            display: grid;
-
-            gap: 8px;
-
-            margin-top: 12px;
-        }
-
-        .button-grid.three-columns {
-            grid-template-columns:
-                repeat(3, 1fr);
-        }
-
-        .button-grid.two-columns {
-            grid-template-columns:
-                repeat(2, 1fr);
-        }
-
-        .control-button {
-            min-height: 48px;
-
-            border: 1px solid var(--border);
-            border-radius: 13px;
-
-            background: #0f1b2d;
-
-            color: var(--muted);
-
-            font-size: 0.78rem;
-            font-weight: bold;
-
-            letter-spacing: 0.05em;
-
-            cursor: pointer;
-        }
-
-        .control-button.active {
-            color: white;
-        }
-
-        .control-button.active.heat {
-            border-color:
-                rgba(251, 146, 60, 0.65);
-
-            background:
-                rgba(251, 146, 60, 0.25);
-        }
-
-        .control-button.active.cool {
-            border-color:
-                rgba(96, 165, 250, 0.65);
-
-            background:
-                rgba(96, 165, 250, 0.25);
-        }
-
-        .control-button.active.off {
-            border-color:
-                rgba(248, 113, 113, 0.55);
-
-            background:
-                rgba(248, 113, 113, 0.17);
-        }
-
-        .control-button.active.fan {
-            border-color:
-                rgba(52, 211, 153, 0.55);
-
-            background:
-                rgba(52, 211, 153, 0.16);
-        }
-
-        button:disabled {
-            opacity: 0.36;
-
-            cursor: not-allowed;
-        }
-
-        /* =====================================================
-           INFORMATION CARDS
-           ===================================================== */
-
-        .information-card {
-            min-height: 110px;
-
-            padding: 16px;
-        }
-
-        .information-card.wide {
-            grid-column:
-                1
-                /
-                -1;
-        }
-
-        .information-value {
-            margin-top: 11px;
-
-            font-size: 1.8rem;
-            font-weight: bold;
-        }
-
-        .information-note {
-            margin-top: 5px;
-
-            color: var(--muted);
-
-            font-size: 0.78rem;
-        }
-
-        .equipment-card {
-            display: flex;
-
-            align-items: center;
-            justify-content: space-between;
-
-            gap: 14px;
-        }
-
-        .equipment-state {
-            display: flex;
-
-            align-items: center;
-
-            gap: 9px;
-
-            color: var(--muted);
-
-            font-weight: bold;
-        }
-
-        .equipment-dot {
-            width: 15px;
-            height: 15px;
-
-            border-radius: 50%;
-
-            background: var(--green);
-        }
-
-        .equipment-dot.heat {
-            background: var(--orange);
-
-            box-shadow:
-                0 0 16px rgba(251, 146, 60, 0.58);
-        }
-
-        .equipment-dot.cool {
-            background: var(--blue);
-
-            box-shadow:
-                0 0 16px rgba(96, 165, 250, 0.58);
-        }
-
-        /* =====================================================
-           SENSOR STRIP
-           ===================================================== */
-
-        .sensor-strip {
-            display: grid;
-
-            grid-template-columns:
-                repeat(3, 1fr);
-
-            margin-top: 12px;
-
-            padding: 15px;
-
-            border: 1px solid var(--border);
-            border-radius: 19px;
-
-            background:
-                rgba(10, 22, 38, 0.92);
-
-            text-align: center;
-        }
-
-        .sensor-strip > div + div {
-            border-left:
-                1px solid var(--border);
-        }
-
-        .sensor-strip span {
-            display: block;
-
-            color: var(--muted);
-
-            font-size: 0.68rem;
-
-            letter-spacing: 0.09em;
-            text-transform: uppercase;
-        }
-
-        .sensor-strip strong {
-            display: block;
-
-            margin-top: 7px;
-        }
-
-        /* =====================================================
-           COMMAND MESSAGE
-           ===================================================== */
-
-        .command-message {
-            display: flex;
-
-            min-height: 45px;
-
-            align-items: center;
-            justify-content: center;
-
-            margin-top: 12px;
-
-            padding:
-                12px
-                14px;
-
-            border: 1px solid transparent;
-            border-radius: 14px;
-
-            color: var(--muted);
-
-            font-size: 0.82rem;
-
-            text-align: center;
-        }
-
-        .command-message.success {
-            border-color:
-                rgba(52, 211, 153, 0.22);
-
-            background:
-                rgba(52, 211, 153, 0.08);
-
-            color: var(--green);
-        }
-
-        .command-message.error {
-            border-color:
-                rgba(248, 113, 113, 0.22);
-
-            background:
-                rgba(248, 113, 113, 0.08);
-
-            color: var(--red);
-        }
-
-        /* =====================================================
-           PLACEHOLDER PAGES
-           ===================================================== */
-
-        .placeholder-card {
-            min-height: 240px;
-
-            padding: 25px;
-        }
-
-        .placeholder-card h2 {
-            margin-top: 0;
-        }
-
-        .placeholder-card p {
-            color: var(--muted);
-
-            line-height: 1.55;
-        }
-
-        .diagnostic-list {
-            display: grid;
-
-            gap: 10px;
-
-            margin-top: 18px;
-        }
-
-        .diagnostic-list div {
-            display: flex;
-
-            justify-content: space-between;
-
-            gap: 20px;
-
-            padding:
-                13px
-                14px;
-
-            border: 1px solid var(--border);
-            border-radius: 13px;
-
-            background:
-                rgba(8, 18, 31, 0.66);
-        }
-
-        .diagnostic-list span {
-            color: var(--muted);
-        }
-
-        /* =====================================================
-           FOOTER
-           ===================================================== */
-
-        footer {
-            display: flex;
-
-            justify-content: center;
-
-            gap: 8px;
-
-            flex-wrap: wrap;
-
-            margin-top: 12px;
-
-            color: var(--muted);
-
-            font-size: 0.75rem;
-
-            text-align: center;
-        }
-
-        #footerError {
-            color: var(--red);
-        }
-
-        /* =====================================================
-           CONNECTION OVERLAY
-           ===================================================== */
-
-        .connection-overlay {
-            position: fixed;
-
-            inset: 0;
-
-            z-index: 100;
-
-            display: grid;
-
-            place-items: center;
-
-            padding: 24px;
-
-            background:
-                rgba(4, 9, 20, 0.78);
-
-            backdrop-filter: blur(9px);
-
-            transition:
-                opacity 0.2s ease,
-                visibility 0.2s ease;
-        }
-
-        .connection-overlay.hidden {
-            opacity: 0;
-
-            visibility: hidden;
-
-            pointer-events: none;
-        }
-
-        .connection-card {
-            width: min(350px, 100%);
-
-            padding:
-                30px
-                23px;
-
-            border: 1px solid var(--border);
-            border-radius: 25px;
-
-            background:
-                linear-gradient(
-                    145deg,
-                    var(--panel-light),
-                    var(--panel-dark)
-                );
-
-            box-shadow: var(--shadow);
-
-            text-align: center;
-        }
-
-        .connection-card h2 {
-            margin: 0;
-
-            font-size: 1.2rem;
-        }
-
-        .connection-card p {
-            margin:
-                9px
-                0
-                0;
-
-            color: var(--muted);
-
-            line-height: 1.45;
-        }
-
-        .spinner {
-            width: 49px;
-            height: 49px;
-
-            margin:
-                0
-                auto
-                19px;
-
-            border:
-                4px solid
-                rgba(148, 163, 184, 0.18);
-
-            border-top-color: var(--blue);
-            border-radius: 50%;
-
-            animation:
-                spinner-rotation
-                0.9s
-                linear
-                infinite;
-        }
-
-        @keyframes spinner-rotation {
-            to {
-                transform: rotate(360deg);
-            }
-        }
-
-        /* =====================================================
-           RESPONSIVE LAYOUT
-           ===================================================== */
-
-        @media (max-width: 600px) {
-            .control-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        @media (max-width: 440px) {
-            .app-shell {
-                padding:
-                    13px
-                    10px
-                    28px;
-            }
-
-            .brand p {
-                display: none;
-            }
-
-            .brand h1 {
-                font-size: 1.35rem;
-            }
-
-            .brand-logo {
-                width: 43px;
-                height: 43px;
-            }
-
-            .thermostat-card {
-                padding:
-                    24px
-                    10px
-                    21px;
-            }
-
-            .sensor-strip {
-                grid-template-columns:
-                    1fr
-                    1fr;
-            }
-
-            .sensor-strip > div:last-child {
-                grid-column:
-                    1
-                    /
-                    -1;
-
-                margin-top: 12px;
-
-                padding-top: 12px;
-
-                border-top:
-                    1px solid var(--border);
-
-                border-left: 0;
-            }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#07111f">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>BANDYSTAT</title>
+
+<style>
+:root{
+    --bg:#07111f;
+    --panel:#0f172a;
+    --panel2:#111c31;
+    --line:rgba(148,163,184,.18);
+    --text:#f8fafc;
+    --muted:#94a3b8;
+    --blue:#3b82f6;
+    --green:#22c55e;
+    --red:#ef4444;
+    --amber:#f59e0b;
+}
+*{box-sizing:border-box}
+body{
+    margin:0;
+    font-family:Arial,Helvetica,sans-serif;
+    background:linear-gradient(180deg,#07111f,#0b1526);
+    color:var(--text);
+}
+button{font:inherit}
+.app-shell{max-width:1100px;margin:auto;padding:14px}
+.top-bar{
+    display:flex;justify-content:space-between;align-items:center;
+    gap:16px;padding:14px 4px 18px;
+}
+.brand{display:flex;align-items:center;gap:12px}
+.brand-logo{
+    width:46px;height:46px;border-radius:14px;display:grid;place-items:center;
+    background:linear-gradient(145deg,#2563eb,#0ea5e9);font-weight:800;
+}
+.brand h1{margin:0;font-size:1.4rem}
+.brand p{margin:3px 0 0;color:var(--muted);font-size:.82rem}
+.connection-badge{
+    display:flex;align-items:center;gap:8px;padding:9px 12px;border:1px solid var(--line);
+    border-radius:999px;color:var(--muted);background:rgba(15,23,42,.8);font-size:.84rem;font-weight:700;
+}
+.connection-dot{width:9px;height:9px;border-radius:50%;background:#64748b}
+.connection-badge.online .connection-dot{background:var(--green);box-shadow:0 0 0 5px rgba(34,197,94,.12)}
+.navigation-tabs{
+    display:flex;gap:8px;overflow-x:auto;padding-bottom:10px;margin-bottom:8px;
+}
+.navigation-button{
+    border:1px solid var(--line);background:rgba(15,23,42,.8);color:var(--muted);
+    border-radius:12px;padding:10px 14px;font-weight:700;cursor:pointer;white-space:nowrap;
+}
+.navigation-button.active{background:#1d4ed8;color:#fff;border-color:#2563eb}
+.page{display:none}
+.page.active{display:block}
+.system-banner,.pressure-banner{
+    display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:15px;
+    border:1px solid var(--line);background:rgba(15,23,42,.86);margin-bottom:14px;font-weight:700;
+}
+.banner-dot,.pressure-banner-dot{width:10px;height:10px;border-radius:50%;background:#64748b}
+.system-banner.normal .banner-dot,.pressure-banner.normal .pressure-banner-dot{background:var(--green)}
+.system-banner.heating .banner-dot{background:var(--amber)}
+.system-banner.cooling .banner-dot,.pressure-banner.pressurizing .pressure-banner-dot{background:var(--blue)}
+.pressure-banner.alert .pressure-banner-dot{background:var(--red)}
+.pressure-banner.offline{color:var(--muted)}
+.pressure-connection-text{margin-left:auto;color:var(--muted);font-size:.8rem}
+.card,.panel,.information-card,.placeholder-card,.pressure-card{
+    background:linear-gradient(145deg,rgba(15,23,42,.96),rgba(7,17,31,.96));
+    border:1px solid var(--line);border-radius:20px;box-shadow:0 18px 40px rgba(0,0,0,.18);
+}
+.thermostat-card{padding:24px;text-align:center}
+.eyebrow{color:var(--muted);font-size:.74rem;text-transform:uppercase;letter-spacing:.12em;font-weight:800}
+.temperature-display{display:flex;justify-content:center;align-items:flex-start;gap:6px;margin:10px 0}
+.temperature-display span{font-size:clamp(4.5rem,14vw,8rem);font-weight:800;letter-spacing:-.08em;line-height:.9}
+.temperature-display small{font-size:1.4rem;color:var(--muted);margin-top:12px}
+.temperature-information{display:flex;justify-content:center;gap:35px;color:var(--muted)}
+.temperature-information strong{display:block;color:var(--text);margin-top:4px}
+.setpoint-control{display:flex;justify-content:center;align-items:center;gap:18px;margin-top:22px}
+.setpoint-button{
+    width:52px;height:52px;border:none;border-radius:50%;background:#1e293b;color:#fff;font-size:1.8rem;cursor:pointer;
+}
+.setpoint-value strong{display:block;font-size:1.7rem}
+.setpoint-value span{color:var(--muted);font-size:.8rem}
+.control-grid,.information-grid,.pressure-information-grid{
+    display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:14px;
+}
+.panel,.information-card,.pressure-card{padding:18px}
+.button-grid{display:grid;gap:10px;margin-top:12px}
+.three-columns{grid-template-columns:repeat(3,1fr)}
+.two-columns{grid-template-columns:repeat(2,1fr)}
+.control-button{
+    border:1px solid var(--line);background:#111827;color:var(--muted);
+    padding:13px;border-radius:12px;font-weight:800;cursor:pointer;
+}
+.control-button.active{color:#fff;background:#1d4ed8}
+.control-button.active.heat{background:#b45309}
+.control-button.active.cool{background:#0369a1}
+.control-button.active.off{background:#374151}
+.control-button:disabled,.setpoint-button:disabled{opacity:.4;cursor:not-allowed}
+.information-value{font-size:1.7rem;font-weight:800;margin-top:7px}
+.information-note{color:var(--muted);font-size:.78rem;margin-top:5px}
+.equipment-card{display:flex;justify-content:space-between;align-items:center}
+.equipment-state{display:flex;align-items:center;gap:8px;color:var(--muted)}
+.equipment-dot{width:12px;height:12px;border-radius:50%;background:#64748b}
+.equipment-dot.heat{background:var(--amber)}
+.equipment-dot.cool{background:var(--blue)}
+.sensor-strip{
+    display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px;
+    background:rgba(15,23,42,.75);border:1px solid var(--line);border-radius:16px;padding:15px;
+}
+.sensor-strip div{text-align:center}
+.sensor-strip span{display:block;color:var(--muted);font-size:.75rem}
+.sensor-strip strong{display:block;margin-top:5px}
+.command-message{margin-top:14px;padding:12px;text-align:center;color:var(--muted)}
+.command-message.success{color:#86efac}
+.command-message.error{color:#fca5a5}
+.placeholder-card{padding:24px}
+.placeholder-card p{color:var(--muted);line-height:1.6}
+.diagnostic-list{display:grid;gap:12px;margin-top:18px}
+.diagnostic-list div{display:flex;justify-content:space-between;border-bottom:1px solid var(--line);padding-bottom:10px}
+footer{display:flex;justify-content:space-between;gap:12px;color:var(--muted);font-size:.78rem;padding:20px 4px 8px}
+.pressure-hero{
+    display:grid;grid-template-columns:1fr auto;gap:20px;align-items:center;padding:24px;
+}
+.pressure-reading{display:flex;align-items:flex-start;gap:8px;margin:8px 0}
+.pressure-reading span{font-size:clamp(4rem,13vw,7.5rem);font-weight:800;letter-spacing:-.08em;line-height:.9}
+.pressure-reading small{margin-top:12px;color:var(--muted);font-size:1.3rem}
+.pressure-direction{color:var(--muted)}
+.pressure-state-box{
+    min-width:180px;padding:16px;border-radius:16px;border:1px solid var(--line);background:#0f172a;text-align:right
+}
+.pressure-state-box span{display:block;color:var(--muted);font-size:.72rem;text-transform:uppercase;letter-spacing:.1em}
+.pressure-state-box strong{display:block;margin-top:5px}
+.pressure-gauge{padding:18px;margin-top:14px}
+.gauge-labels{display:flex;justify-content:space-between;color:var(--muted);font-size:.75rem}
+.gauge-track{
+    position:relative;height:16px;margin-top:10px;border-radius:999px;
+    background:linear-gradient(90deg,#dc2626,#f59e0b,#84cc16,#22c55e);
+}
+.gauge-center{position:absolute;left:50%;top:-5px;bottom:-5px;width:2px;background:#fff}
+.gauge-needle{
+    position:absolute;top:50%;left:50%;width:24px;height:24px;border-radius:50%;
+    transform:translate(-50%,-50%);background:#fff;border:4px solid #07111f;
+    transition:left .35s ease;
+}
+.pressure-information-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+.pressure-value{font-size:1.8rem;font-weight:800;margin-top:7px}
+.event-log{margin-top:14px;padding:18px}
+.event-head{display:flex;justify-content:space-between;align-items:center}
+.event-head button{
+    border:1px solid var(--line);background:#111827;color:#cbd5e1;border-radius:10px;padding:8px 12px;cursor:pointer
+}
+.event-list{display:grid;gap:8px;margin-top:12px;max-height:280px;overflow:auto}
+.event-entry{
+    display:grid;grid-template-columns:90px 1fr;gap:10px;padding:10px;border-left:3px solid #64748b;
+    background:#0f172a;border-radius:10px;color:#cbd5e1;font-size:.84rem
+}
+.event-entry.normal{border-left-color:var(--green)}
+.event-entry.pressurizing{border-left-color:var(--blue)}
+.event-entry.alert{border-left-color:var(--red)}
+.event-time{color:var(--muted);font-size:.75rem}
+.connection-overlay{
+    position:fixed;inset:0;display:grid;place-items:center;background:rgba(3,7,18,.93);z-index:999;
+}
+.connection-overlay.hidden{display:none}
+.connection-card{
+    width:min(90%,380px);padding:28px;border-radius:20px;border:1px solid var(--line);background:#0f172a;text-align:center
+}
+.connection-card p{color:var(--muted)}
+.spinner{
+    width:42px;height:42px;border:4px solid #1e293b;border-top-color:#3b82f6;border-radius:50%;
+    margin:0 auto 15px;animation:spin 1s linear infinite
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media(max-width:720px){
+    .pressure-hero{grid-template-columns:1fr}
+    .pressure-state-box{text-align:left;min-width:0}
+    .pressure-information-grid{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:520px){
+    .top-bar{align-items:flex-start}
+    .brand p{display:none}
+    .control-grid,.information-grid,.pressure-information-grid{grid-template-columns:1fr}
+    .sensor-strip{grid-template-columns:1fr}
+    .event-entry{grid-template-columns:1fr}
+}
+</style>
 </head>
 
 <body>
+<div id="connectionOverlay" class="connection-overlay">
+    <div class="connection-card">
+        <div class="spinner"></div>
+        <h2>Connecting to BANDYSTAT…</h2>
+        <p id="connectionOverlayText">Waiting for the Arduino Yún and Wi-Fi connection.</p>
+    </div>
+</div>
 
-    <!-- =====================================================
-         CONNECTION OVERLAY
-         ===================================================== -->
-
-    <div
-        id="connectionOverlay"
-        class="connection-overlay"
-    >
-        <div class="connection-card">
-
-            <div class="spinner"></div>
-
-            <h2>
-                Connecting to BANDYSTAT…
-            </h2>
-
-            <p id="connectionOverlayText">
-                Waiting for the Arduino Yún and Wi-Fi connection.
-            </p>
-
+<div class="app-shell">
+<header class="top-bar">
+    <div class="brand">
+        <div class="brand-logo">BS</div>
+        <div>
+            <h1>BANDYSTAT</h1>
+            <p>Home Environmental Controller</p>
         </div>
     </div>
-
-    <!-- =====================================================
-         APPLICATION
-         ===================================================== -->
-
-    <div class="app-shell">
-
-        <header class="top-bar">
-
-            <div class="brand">
-
-                <div class="brand-logo">
-                    BS
-                </div>
-
-                <div>
-
-                    <h1>
-                        BANDYSTAT
-                    </h1>
-
-                    <p>
-                        Home Environmental Controller
-                    </p>
-
-                </div>
-
-            </div>
-
-            <div
-                id="connectionBadge"
-                class="connection-badge"
-            >
-
-                <span class="connection-dot"></span>
-
-                <span id="connectionText">
-                    Connecting
-                </span>
-
-            </div>
-
-        </header>
-
-        <!-- =================================================
-             NAVIGATION
-             ================================================= -->
-
-        <nav
-            class="navigation-tabs"
-            aria-label="BANDYSTAT sections"
-        >
-
-            <button
-                class="navigation-button active"
-                data-page="thermostat"
-            >
-                Thermostat
-            </button>
-
-            <button
-                class="navigation-button"
-                data-page="pressure"
-            >
-                Pressure
-            </button>
-
-            <button
-                class="navigation-button"
-                data-page="history"
-            >
-                History
-            </button>
-
-            <button
-                class="navigation-button"
-                data-page="diagnostics"
-            >
-                Diagnostics
-            </button>
-
-            <button
-                class="navigation-button"
-                data-page="settings"
-            >
-                Settings
-            </button>
-
-        </nav>
-
-        <main>
-
-            <!-- =============================================
-                 THERMOSTAT PAGE
-                 ============================================= -->
-
-            <section
-                id="page-thermostat"
-                class="page active"
-            >
-
-                <div
-                    id="systemBanner"
-                    class="system-banner normal"
-                >
-
-                    <span class="banner-dot"></span>
-
-                    <span id="systemBannerText">
-                        System Normal
-                    </span>
-
-                </div>
-
-                <section class="thermostat-card">
-
-                    <div class="eyebrow">
-                        Indoor temperature
-                    </div>
-
-                    <div class="temperature-display">
-
-                        <span id="temperature">
-                            --.-
-                        </span>
-
-                        <small>
-                            °F
-                        </small>
-
-                    </div>
-
-                    <div class="temperature-information">
-
-                        <span>
-                            Humidity
-
-                            <strong id="humidity">
-                                --%
-                            </strong>
-                        </span>
-
-                        <span>
-                            Mode
-
-                            <strong id="heroMode">
-                                --
-                            </strong>
-                        </span>
-
-                    </div>
-
-                    <div class="setpoint-control">
-
-                        <button
-                            class="setpoint-button api-control"
-                            data-command="setpoint/down"
-                            aria-label="Lower setpoint"
-                        >
-                            −
-                        </button>
-
-                        <div class="setpoint-value">
-
-                            <strong id="setpoint">
-                                --.-°
-                            </strong>
-
-                            <span>
-                                Set point
-                            </span>
-
-                        </div>
-
-                        <button
-                            class="setpoint-button api-control"
-                            data-command="setpoint/up"
-                            aria-label="Raise setpoint"
-                        >
-                            +
-                        </button>
-
-                    </div>
-
-                </section>
-
-                <!-- =========================================
-                     MODE AND FAN CONTROLS
-                     ========================================= -->
-
-                <section class="control-grid">
-
-                    <article class="panel">
-
-                        <div class="eyebrow">
-                            System mode
-                        </div>
-
-                        <div class="button-grid three-columns">
-
-                            <button
-                                id="modeHeat"
-                                class="control-button api-control"
-                                data-command="mode/heat"
-                            >
-                                HEAT
-                            </button>
-
-                            <button
-                                id="modeCool"
-                                class="control-button api-control"
-                                data-command="mode/cool"
-                            >
-                                COOL
-                            </button>
-
-                            <button
-                                id="modeOff"
-                                class="control-button api-control"
-                                data-command="mode/off"
-                            >
-                                OFF
-                            </button>
-
-                        </div>
-
-                    </article>
-
-                    <article class="panel">
-
-                        <div class="eyebrow">
-                            Blower fan
-                        </div>
-
-                        <div class="button-grid two-columns">
-
-                            <button
-                                id="fanAuto"
-                                class="control-button api-control"
-                                data-command="fan/auto"
-                            >
-                                AUTO
-                            </button>
-
-                            <button
-                                id="fanOn"
-                                class="control-button api-control"
-                                data-command="fan/on"
-                            >
-                                ON
-                            </button>
-
-                        </div>
-
-                    </article>
-
-                </section>
-
-                <!-- =========================================
-                     SYSTEM INFORMATION
-                     ========================================= -->
-
-                <section class="information-grid">
-
-                    <article class="information-card">
-
-                        <div class="eyebrow">
-                            Mode
-                        </div>
-
-                        <div
-                            id="modeValue"
-                            class="information-value"
-                        >
-                            --
-                        </div>
-
-                        <div class="information-note">
-                            Thermostat setting
-                        </div>
-
-                    </article>
-
-                    <article class="information-card">
-
-                        <div class="eyebrow">
-                            Fan
-                        </div>
-
-                        <div
-                            id="fanValue"
-                            class="information-value"
-                        >
-                            --
-                        </div>
-
-                        <div class="information-note">
-                            Blower selection
-                        </div>
-
-                    </article>
-
-                    <article
-                        class="
-                            information-card
-                            wide
-                            equipment-card
-                        "
-                    >
-
-                        <div>
-
-                            <div class="eyebrow">
-                                Equipment
-                            </div>
-
-                            <div
-                                id="equipmentValue"
-                                class="information-value"
-                            >
-                                --
-                            </div>
-
-                        </div>
-
-                        <div class="equipment-state">
-
-                            <span
-                                id="equipmentDot"
-                                class="equipment-dot"
-                            ></span>
-
-                            <span id="equipmentDetail">
-                                Waiting
-                            </span>
-
-                        </div>
-
-                    </article>
-
-                </section>
-
-                <!-- =========================================
-                     SENSOR INFORMATION
-                     ========================================= -->
-
-                <section class="sensor-strip">
-
-                    <div>
-
-                        <span>
-                            Downstairs
-                        </span>
-
-                        <strong id="downstairsTemperature">
-                            --.-°F
-                        </strong>
-
-                    </div>
-
-                    <div>
-
-                        <span>
-                            Upstairs
-                        </span>
-
-                        <strong id="upstairsTemperature">
-                            --.-°F
-                        </strong>
-
-                    </div>
-
-                    <div>
-
-                        <span>
-                            Active sensor
-                        </span>
-
-                        <strong id="activeSensor">
-                            --
-                        </strong>
-
-                    </div>
-
-                </section>
-
-                <div
-                    id="commandMessage"
-                    class="command-message"
-                >
-                    Controls will unlock when BANDYSTAT connects.
-                </div>
-
-            </section>
-
-            <!-- =============================================
-                 PRESSURE PAGE
-                 ============================================= -->
-
-            <section
-                id="page-pressure"
-                class="page"
-            >
-
-                <article class="placeholder-card">
-
-                    <h2>
-                        Pressure Controller
-                    </h2>
-
-                    <p>
-                        This page is ready for house pressure,
-                        fan speed, runtime, starts, outdoor
-                        conditions, and pressure graphs.
-                    </p>
-
-                </article>
-
-            </section>
-
-            <!-- =============================================
-                 HISTORY PAGE
-                 ============================================= -->
-
-            <section
-                id="page-history"
-                class="page"
-            >
-
-                <article class="placeholder-card">
-
-                    <h2>
-                        History
-                    </h2>
-
-                    <p>
-                        This page is ready for temperature,
-                        humidity, equipment, and pressure history.
-                    </p>
-
-                </article>
-
-            </section>
-
-            <!-- =============================================
-                 DIAGNOSTICS PAGE
-                 ============================================= -->
-
-            <section
-                id="page-diagnostics"
-                class="page"
-            >
-
-                <article class="placeholder-card">
-
-                    <h2>
-                        Diagnostics
-                    </h2>
-
-                    <div class="diagnostic-list">
-
-                        <div>
-
-                            <span>
-                                Controller
-                            </span>
-
-                            <strong id="diagnosticController">
-                                Offline
-                            </strong>
-
-                        </div>
-
-                        <div>
-
-                            <span>
-                                Sensor 1
-                            </span>
-
-                            <strong id="diagnosticSensor1">
-                                Unknown
-                            </strong>
-
-                        </div>
-
-                        <div>
-
-                            <span>
-                                Sensor 2
-                            </span>
-
-                            <strong id="diagnosticSensor2">
-                                Unknown
-                            </strong>
-
-                        </div>
-
-                        <div>
-
-                            <span>
-                                Last update
-                            </span>
-
-                            <strong id="diagnosticUpdated">
-                                Never
-                            </strong>
-
-                        </div>
-
-                    </div>
-
-                </article>
-
-            </section>
-
-            <!-- =============================================
-                 SETTINGS PAGE
-                 ============================================= -->
-
-            <section
-                id="page-settings"
-                class="page"
-            >
-
-                <article class="placeholder-card">
-
-                    <h2>
-                        Settings
-                    </h2>
-
-                    <p>
-                        Thermostat limits, calibration,
-                        fan tuning, and pressure settings
-                        will be added here.
-                    </p>
-
-                </article>
-
-            </section>
-
-        </main>
-
-        <footer>
-
-            <span id="lastUpdated">
-                Waiting for thermostat data…
-            </span>
-
-            <span id="footerError"></span>
-
-        </footer>
-
+    <div id="connectionBadge" class="connection-badge">
+        <span class="connection-dot"></span>
+        <span id="connectionText">Connecting</span>
+    </div>
+</header>
+
+<nav class="navigation-tabs">
+    <button class="navigation-button active" data-page="thermostat">Thermostat</button>
+    <button class="navigation-button" data-page="pressure">Pressure</button>
+    <button class="navigation-button" data-page="history">History</button>
+    <button class="navigation-button" data-page="diagnostics">Diagnostics</button>
+    <button class="navigation-button" data-page="settings">Settings</button>
+</nav>
+
+<main>
+<section id="page-thermostat" class="page active">
+    <div id="systemBanner" class="system-banner normal">
+        <span class="banner-dot"></span>
+        <span id="systemBannerText">System Normal</span>
     </div>
 
-    <script>
-        /*
-         * =====================================================
-         * BANDYSTAT WEB APPLICATION
-         * =====================================================
-         *
-         * Required Arduino Yún endpoints:
-         *
-         * /arduino/status
-         *
-         * /arduino/setpoint/up
-         * /arduino/setpoint/down
-         *
-         * /arduino/mode/heat
-         * /arduino/mode/cool
-         * /arduino/mode/off
-         *
-         * /arduino/fan/auto
-         * /arduino/fan/on
-         *
-         * =====================================================
-         */
-
-        const STATUS_URL =
-            "/arduino/status";
-
-        const COMMAND_BASE_URL =
-            "/arduino/";
-
-        const REFRESH_INTERVAL_MS =
-            1000;
-
-        const REQUEST_TIMEOUT_MS =
-            900;
-
-        const controls =
-            Array.from(
-                document.querySelectorAll(
-                    ".api-control"
-                )
-            );
-
-        let controllerOnline =
-            false;
-
-        let refreshInProgress =
-            false;
-
-        let commandInProgress =
-            false;
-
-        let hasConnectedBefore =
-            false;
-
-        let commandMessageTimer =
-            null;
-
-        /*
-         * =====================================================
-         * ELEMENT HELPER
-         * =====================================================
-         */
-
-        function getElement(id) {
-            return document.getElementById(id);
-        }
-
-        /*
-         * =====================================================
-         * FORMAT NUMERIC VALUE
-         * =====================================================
-         */
-
-        function formatNumber(
-            value,
-            decimalPlaces
-        ) {
-            const numericValue =
-                Number(value);
-
-            if (
-                !Number.isFinite(
-                    numericValue
-                )
-            ) {
-                return "--";
-            }
-
-            return numericValue.toFixed(
-                decimalPlaces
-            );
-        }
-
-        /*
-         * =====================================================
-         * ENABLE OR DISABLE CONTROLS
-         * =====================================================
-         */
-
-        function updateControlAvailability() {
-            const controlsEnabled =
-                controllerOnline &&
-                !commandInProgress;
-
-            controls.forEach(
-                function (button) {
-                    button.disabled =
-                        !controlsEnabled;
-                }
-            );
-        }
-
-        /*
-         * =====================================================
-         * CONNECTION DISPLAY
-         * =====================================================
-         */
-
-        function setConnectionState(
-            isOnline
-        ) {
-            controllerOnline =
-                isOnline;
-
-            const badge =
-                getElement(
-                    "connectionBadge"
-                );
-
-            const overlay =
-                getElement(
-                    "connectionOverlay"
-                );
-
-            const overlayText =
-                getElement(
-                    "connectionOverlayText"
-                );
-
-            badge.className =
-                "connection-badge " +
-                (
-                    isOnline
-                        ? "online"
-                        : ""
-                );
-
-            getElement(
-                "connectionText"
-            ).textContent =
-                isOnline
-                    ? "Online"
-                    : "Offline";
-
-            overlay.classList.toggle(
-                "hidden",
-                isOnline
-            );
-
-            getElement(
-                "diagnosticController"
-            ).textContent =
-                isOnline
-                    ? "Online"
-                    : "Offline";
-
-            if (!isOnline) {
-                overlayText.textContent =
-                    hasConnectedBefore
-                        ? "Connection lost. BANDYSTAT will reconnect automatically."
-                        : "Waiting for the Arduino Yún and Wi-Fi connection.";
-            }
-
-            if (isOnline) {
-                hasConnectedBefore =
-                    true;
-            }
-
-            updateControlAvailability();
-        }
-
-        /*
-         * =====================================================
-         * COMMAND MESSAGE
-         * =====================================================
-         */
-
-        function showCommandMessage(
-            message,
-            messageType
-        ) {
-            clearTimeout(
-                commandMessageTimer
-            );
-
-            const messageBox =
-                getElement(
-                    "commandMessage"
-                );
-
-            messageBox.textContent =
-                message;
-
-            messageBox.className =
-                "command-message";
-
-            if (messageType) {
-                messageBox.classList.add(
-                    messageType
-                );
-            }
-
-            if (messageType) {
-                commandMessageTimer =
-                    setTimeout(
-                        function () {
-                            messageBox.textContent =
-                                controllerOnline
-                                    ? "BANDYSTAT is online and ready."
-                                    : "Reconnecting to BANDYSTAT…";
-
-                            messageBox.className =
-                                "command-message";
-                        },
-                        2800
-                    );
-            }
-        }
-
-        /*
-         * =====================================================
-         * HTTP REQUEST
-         * =====================================================
-         */
-
-        async function requestJson(url) {
-            const abortController =
-                new AbortController();
-
-            const timeout =
-                setTimeout(
-                    function () {
-                        abortController.abort();
-                    },
-                    REQUEST_TIMEOUT_MS
-                );
-
-            try {
-                const separator =
-                    url.includes("?")
-                        ? "&"
-                        : "?";
-
-                const response =
-                    await fetch(
-                        url +
-                        separator +
-                        "time=" +
-                        Date.now(),
-                        {
-                            cache: "no-store",
-
-                            signal:
-                                abortController.signal
-                        }
-                    );
-
-                if (!response.ok) {
-                    throw new Error(
-                        "HTTP " +
-                        response.status
-                    );
-                }
-
-                return await response.json();
-            }
-            finally {
-                clearTimeout(timeout);
-            }
-        }
-
-        /*
-         * =====================================================
-         * CONTROL BUTTON APPEARANCE
-         * =====================================================
-         */
-
-        function updateControlButton(
-            buttonId,
-            isActive,
-            activeClass
-        ) {
-            const button =
-                getElement(buttonId);
-
-            button.className =
-                "control-button api-control";
-
-            if (isActive) {
-                button.classList.add(
-                    "active",
-                    activeClass
-                );
-            }
-        }
-
-        /*
-         * =====================================================
-         * EQUIPMENT INFORMATION
-         * =====================================================
-         */
-
-        function getEquipmentInformation(
-            equipmentValue
-        ) {
-            const equipment =
-                String(
-                    equipmentValue ||
-                    "IDLE"
-                ).toUpperCase();
-
-            if (
-                equipment.includes(
-                    "HEAT"
-                )
-            ) {
-                return {
-                    title:
-                        "Heating",
-
-                    detail:
-                        "Heat running",
-
-                    dotClass:
-                        "heat",
-
-                    bannerText:
-                        "Heating",
-
-                    bannerClass:
-                        "heating"
-                };
-            }
-
-            if (
-                equipment.includes(
-                    "COOL"
-                )
-            ) {
-                return {
-                    title:
-                        "Cooling",
-
-                    detail:
-                        "Cooling running",
-
-                    dotClass:
-                        "cool",
-
-                    bannerText:
-                        "Cooling",
-
-                    bannerClass:
-                        "cooling"
-                };
-            }
-
-            return {
-                title:
-                    "Idle",
-
-                detail:
-                    "System ready",
-
-                dotClass:
-                    "",
-
-                bannerText:
-                    "System Normal",
-
-                bannerClass:
-                    "normal"
-            };
-        }
-
-        /*
-         * =====================================================
-         * DISPLAY THERMOSTAT DATA
-         * =====================================================
-         */
-
-        function displayThermostatData(
-            data
-        ) {
-            getElement(
-                "temperature"
-            ).textContent =
-                formatNumber(
-                    data.temperature,
-                    1
-                );
-
-            getElement(
-                "humidity"
-            ).textContent =
-                formatNumber(
-                    data.humidity,
-                    0
-                ) +
-                "%";
-
-            getElement(
-                "setpoint"
-            ).textContent =
-                formatNumber(
-                    data.setpoint,
-                    1
-                ) +
-                "°";
-
-            const mode =
-                String(
-                    data.mode ||
-                    "--"
-                ).toUpperCase();
-
-            const fan =
-                String(
-                    data.fan ||
-                    "--"
-                ).toUpperCase();
-
-            getElement(
-                "heroMode"
-            ).textContent =
-                mode;
-
-            getElement(
-                "modeValue"
-            ).textContent =
-                mode;
-
-            getElement(
-                "fanValue"
-            ).textContent =
-                fan;
-
-            getElement(
-                "downstairsTemperature"
-            ).textContent =
-                formatNumber(
-                    data.downstairsTemp,
-                    1
-                ) +
-                "°F";
-
-            getElement(
-                "upstairsTemperature"
-            ).textContent =
-                formatNumber(
-                    data.upstairsTemp,
-                    1
-                ) +
-                "°F";
-
-            getElement(
-                "activeSensor"
-            ).textContent =
-                data.activeSensor
-                    ? "Sensor " +
-                      data.activeSensor
-                    : "--";
-
-            updateControlButton(
-                "modeHeat",
-                mode === "HEAT",
-                "heat"
-            );
-
-            updateControlButton(
-                "modeCool",
-                mode === "COOL",
-                "cool"
-            );
-
-            updateControlButton(
-                "modeOff",
-                mode === "OFF",
-                "off"
-            );
-
-            updateControlButton(
-                "fanAuto",
-                fan === "AUTO",
-                "fan"
-            );
-
-            updateControlButton(
-                "fanOn",
-                fan === "ON",
-                "fan"
-            );
-
-            const equipment =
-                getEquipmentInformation(
-                    data.equipment
-                );
-
-            getElement(
-                "equipmentValue"
-            ).textContent =
-                equipment.title;
-
-            getElement(
-                "equipmentDetail"
-            ).textContent =
-                equipment.detail;
-
-            getElement(
-                "equipmentDot"
-            ).className =
-                "equipment-dot " +
-                equipment.dotClass;
-
-            getElement(
-                "systemBannerText"
-            ).textContent =
-                equipment.bannerText;
-
-            getElement(
-                "systemBanner"
-            ).className =
-                "system-banner " +
-                equipment.bannerClass;
-
-            getElement(
-                "diagnosticSensor1"
-            ).textContent =
-                data.sensor1Error
-                    ? "Error"
-                    : "OK";
-
-            getElement(
-                "diagnosticSensor2"
-            ).textContent =
-                data.sensor2Error
-                    ? "Error"
-                    : "OK";
-        }
-
-        /*
-         * =====================================================
-         * READ CURRENT STATUS
-         * =====================================================
-         */
-
-        async function refreshStatus() {
-            if (
-                refreshInProgress ||
-                commandInProgress
-            ) {
-                return;
-            }
-
-            refreshInProgress =
-                true;
-
-            try {
-                const data =
-                    await requestJson(
-                        STATUS_URL
-                    );
-
-                displayThermostatData(
-                    data
-                );
-
-                setConnectionState(
-                    true
-                );
-
-                const currentTime =
-                    new Date()
-                        .toLocaleTimeString();
-
-                getElement(
-                    "lastUpdated"
-                ).textContent =
-                    "Updated " +
-                    currentTime;
-
-                getElement(
-                    "diagnosticUpdated"
-                ).textContent =
-                    currentTime;
-
-                getElement(
-                    "footerError"
-                ).textContent =
-                    "";
-
-                if (
-                    getElement(
-                        "commandMessage"
-                    ).textContent.includes(
-                        "unlock"
-                    )
-                ) {
-                    showCommandMessage(
-                        "BANDYSTAT is online and ready."
-                    );
-                }
-            }
-            catch (error) {
-                setConnectionState(
-                    false
-                );
-
-                getElement(
-                    "lastUpdated"
-                ).textContent =
-                    "Thermostat connection lost";
-
-                getElement(
-                    "footerError"
-                ).textContent =
-                    error.name ===
-                    "AbortError"
-                        ? "Controller did not respond"
-                        : "Trying to reconnect";
-
-                showCommandMessage(
-                    "Reconnecting to BANDYSTAT…"
-                );
-            }
-            finally {
-                refreshInProgress =
-                    false;
-            }
-        }
-
-        /*
-         * =====================================================
-         * SEND CONTROL COMMAND
-         * =====================================================
-         */
-
-        async function sendCommand(
-            command
-        ) {
-            if (
-                !controllerOnline ||
-                commandInProgress
-            ) {
-                return;
-            }
-
-            commandInProgress =
-                true;
-
-            updateControlAvailability();
-
-            showCommandMessage(
-                "Sending command…"
-            );
-
-            try {
-                const result =
-                    await requestJson(
-                        COMMAND_BASE_URL +
-                        command
-                    );
-
-                if (
-                    result.success ===
-                    false
-                ) {
-                    throw new Error(
-                        result.error ||
-                        "Command rejected"
-                    );
-                }
-
-                showCommandMessage(
-                    result.message ||
-                    "Command accepted",
-                    "success"
-                );
-
-                await new Promise(
-                    function (resolve) {
-                        setTimeout(
-                            resolve,
-                            120
-                        );
-                    }
-                );
-
-                await refreshStatus();
-            }
-            catch (error) {
-                showCommandMessage(
-                    error.name ===
-                    "AbortError"
-                        ? "Command timed out"
-                        : "Command failed: " +
-                          error.message,
-                    "error"
-                );
-
-                await refreshStatus();
-            }
-            finally {
-                commandInProgress =
-                    false;
-
-                updateControlAvailability();
-            }
-        }
-
-        /*
-         * =====================================================
-         * CONTROL BUTTON EVENTS
-         * =====================================================
-         */
-
-        controls.forEach(
-            function (button) {
-                button.addEventListener(
-                    "click",
-                    function () {
-                        sendCommand(
-                            button.dataset.command
-                        );
-                    }
-                );
-            }
+    <section class="card thermostat-card">
+        <div class="eyebrow">Indoor temperature</div>
+        <div class="temperature-display">
+            <span id="temperature">--.-</span><small>°F</small>
+        </div>
+        <div class="temperature-information">
+            <span>Humidity<strong id="humidity">--%</strong></span>
+            <span>Mode<strong id="heroMode">--</strong></span>
+        </div>
+        <div class="setpoint-control">
+            <button class="setpoint-button api-control" data-command="setpoint/down">−</button>
+            <div class="setpoint-value">
+                <strong id="setpoint">--.-°</strong>
+                <span>Set point</span>
+            </div>
+            <button class="setpoint-button api-control" data-command="setpoint/up">+</button>
+        </div>
+    </section>
+
+    <section class="control-grid">
+        <article class="panel">
+            <div class="eyebrow">System mode</div>
+            <div class="button-grid three-columns">
+                <button id="modeHeat" class="control-button api-control" data-command="mode/heat">HEAT</button>
+                <button id="modeCool" class="control-button api-control" data-command="mode/cool">COOL</button>
+                <button id="modeOff" class="control-button api-control" data-command="mode/off">OFF</button>
+            </div>
+        </article>
+        <article class="panel">
+            <div class="eyebrow">Blower fan</div>
+            <div class="button-grid two-columns">
+                <button id="fanAuto" class="control-button api-control" data-command="fan/auto">AUTO</button>
+                <button id="fanOn" class="control-button api-control" data-command="fan/on">ON</button>
+            </div>
+        </article>
+    </section>
+
+    <section class="information-grid">
+        <article class="information-card">
+            <div class="eyebrow">Mode</div>
+            <div id="modeValue" class="information-value">--</div>
+            <div class="information-note">Thermostat setting</div>
+        </article>
+        <article class="information-card">
+            <div class="eyebrow">Fan</div>
+            <div id="fanValue" class="information-value">--</div>
+            <div class="information-note">Blower selection</div>
+        </article>
+        <article class="information-card equipment-card">
+            <div>
+                <div class="eyebrow">Equipment</div>
+                <div id="equipmentValue" class="information-value">--</div>
+            </div>
+            <div class="equipment-state">
+                <span id="equipmentDot" class="equipment-dot"></span>
+                <span id="equipmentDetail">Waiting</span>
+            </div>
+        </article>
+    </section>
+
+    <section class="sensor-strip">
+        <div><span>Downstairs</span><strong id="downstairsTemperature">--.-°F</strong></div>
+        <div><span>Upstairs</span><strong id="upstairsTemperature">--.-°F</strong></div>
+        <div><span>Active sensor</span><strong id="activeSensor">--</strong></div>
+    </section>
+
+    <div id="commandMessage" class="command-message">
+        Controls will unlock when BANDYSTAT connects.
+    </div>
+</section>
+
+<section id="page-pressure" class="page">
+    <div id="pressureBanner" class="pressure-banner offline">
+        <span class="pressure-banner-dot"></span>
+        <span id="pressureBannerText">Pressure controller waiting</span>
+        <span id="pressureConnectionText" class="pressure-connection-text">Offline</span>
+    </div>
+
+    <section class="pressure-card pressure-hero">
+        <div>
+            <div class="eyebrow">House pressure</div>
+            <div class="pressure-reading">
+                <span id="pressureValue">--.--</span><small>Pa</small>
+            </div>
+            <div id="pressureDirection" class="pressure-direction">Waiting for controller data</div>
+        </div>
+        <div class="pressure-state-box">
+            <span>Controller state</span>
+            <strong id="pressureState">--</strong>
+        </div>
+    </section>
+
+    <section class="pressure-card pressure-gauge">
+        <div class="gauge-labels"><span>-2 Pa</span><span id="pressureGaugeLabel">--.-- Pa</span><span>+2 Pa</span></div>
+        <div class="gauge-track">
+            <div class="gauge-center"></div>
+            <div id="pressureGaugeNeedle" class="gauge-needle"></div>
+        </div>
+    </section>
+
+    <section class="pressure-information-grid">
+        <article class="pressure-card"><div class="eyebrow">Fan level</div><div id="pressureFan" class="pressure-value">--</div></article>
+        <article class="pressure-card"><div class="eyebrow">Requested fan</div><div id="pressureRequestedFan" class="pressure-value">--</div></article>
+        <article class="pressure-card"><div class="eyebrow">Runtime</div><div id="pressureRuntime" class="pressure-value">--</div></article>
+        <article class="pressure-card"><div class="eyebrow">Starts</div><div id="pressureStarts" class="pressure-value">--</div></article>
+        <article class="pressure-card"><div class="eyebrow">Temperature</div><div id="pressureTemperature" class="pressure-value">--.-°F</div></article>
+        <article class="pressure-card"><div class="eyebrow">Humidity</div><div id="pressureHumidity" class="pressure-value">--.-%</div></article>
+    </section>
+
+    <section class="pressure-card event-log">
+        <div class="event-head">
+            <div><div class="eyebrow">Event log</div><h2>Pressure activity</h2></div>
+            <button id="clearPressureLog">Clear</button>
+        </div>
+        <div id="pressureEventLog" class="event-list">
+            <div class="information-note">Waiting for the first pressure update.</div>
+        </div>
+    </section>
+</section>
+
+<section id="page-history" class="page">
+    <article class="placeholder-card"><h2>History</h2><p>Temperature, humidity, equipment, and pressure history will be added here.</p></article>
+</section>
+
+<section id="page-diagnostics" class="page">
+    <article class="placeholder-card">
+        <h2>Diagnostics</h2>
+        <div class="diagnostic-list">
+            <div><span>Thermostat controller</span><strong id="diagnosticController">Offline</strong></div>
+            <div><span>Sensor 1</span><strong id="diagnosticSensor1">Unknown</strong></div>
+            <div><span>Sensor 2</span><strong id="diagnosticSensor2">Unknown</strong></div>
+            <div><span>Pressure controller</span><strong id="diagnosticPressureController">Offline</strong></div>
+            <div><span>Last update</span><strong id="diagnosticUpdated">Never</strong></div>
+        </div>
+    </article>
+</section>
+
+<section id="page-settings" class="page">
+    <article class="placeholder-card"><h2>Settings</h2><p>Thermostat limits, calibration, fan tuning, and pressure settings will be added here.</p></article>
+</section>
+</main>
+
+<footer>
+    <span id="lastUpdated">Waiting for thermostat data…</span>
+    <span id="footerError"></span>
+</footer>
+</div>
+
+<script>
+const STATUS_URL="/arduino/status";
+const COMMAND_BASE_URL="/arduino/";
+const PRESSURE_STATUS_URL="http://192.168.50.51/pressure/pressure.php"
+const REFRESH_INTERVAL_MS=5000;
+const REQUEST_TIMEOUT_MS=8000;
+
+const controls=[...document.querySelectorAll(".api-control")];
+let controllerOnline=false;
+let refreshInProgress=false;
+let commandInProgress=false;
+let hasConnectedBefore=false;
+let consecutiveFailures=0;
+let lastSuccessfulUpdate=0;
+let commandMessageTimer=null;
+
+let pressureRefreshInProgress=false;
+let pressureEvents=[];
+let lastPressureState="";
+let lastPressureSignature="";
+
+function el(id){return document.getElementById(id)}
+function num(v,d){const n=Number(v);return Number.isFinite(n)?n.toFixed(d):"--"}
+
+function setControls(){
+    controls.forEach(b=>b.disabled=!(controllerOnline&&!commandInProgress));
+}
+
+function setConnectionState(online,showOverlay){
+    controllerOnline=online;
+    const badge=el("connectionBadge");
+    const overlay=el("connectionOverlay");
+    badge.className="connection-badge "+(online?"online":"");
+    el("connectionText").textContent=online?"Online":"Delayed";
+
+    if(online){
+        overlay.classList.add("hidden");
+        hasConnectedBefore=true;
+    }else if(showOverlay||!hasConnectedBefore){
+        overlay.classList.remove("hidden");
+        el("connectionOverlayText").textContent=hasConnectedBefore
+            ?"Connection lost. BANDYSTAT will reconnect automatically."
+            :"Waiting for the Arduino Yún and Wi-Fi connection.";
+    }else{
+        overlay.classList.add("hidden");
+    }
+
+    el("diagnosticController").textContent=online?"Online":"Delayed";
+    setControls();
+}
+
+function showMessage(message,type){
+    clearTimeout(commandMessageTimer);
+    const box=el("commandMessage");
+    box.textContent=message;
+    box.className="command-message"+(type?" "+type:"");
+    if(type){
+        commandMessageTimer=setTimeout(()=>{
+            box.textContent=controllerOnline?"BANDYSTAT is online and ready.":"Reconnecting to BANDYSTAT…";
+            box.className="command-message";
+        },2800);
+    }
+}
+
+async function requestText(url,timeout=REQUEST_TIMEOUT_MS){
+    const controller=new AbortController();
+    const timer=setTimeout(()=>controller.abort(),timeout);
+    try{
+        const sep=url.includes("?")?"&":"?";
+        const response=await fetch(url+sep+"time="+Date.now(),{cache:"no-store",signal:controller.signal});
+        if(!response.ok)throw new Error("HTTP "+response.status);
+        const text=await response.text();
+        if(!text.trim())throw new Error("Empty response");
+        return text.trim();
+    }finally{clearTimeout(timer)}
+}
+
+async function requestJson(url){
+    const text=await requestText(url);
+    try{return JSON.parse(text)}catch(e){throw new Error("Invalid JSON response")}
+}
+
+function setButton(id,active,activeClass){
+    const b=el(id);
+    b.className="control-button api-control";
+    if(active)b.classList.add("active",activeClass);
+}
+
+function equipmentInfo(value){
+    const v=String(value||"IDLE").toUpperCase();
+    if(v.includes("HEAT"))return{title:"Heating",detail:"Heat running",dot:"heat",banner:"Heating",bannerClass:"heating"};
+    if(v.includes("COOL"))return{title:"Cooling",detail:"Cooling running",dot:"cool",banner:"Cooling",bannerClass:"cooling"};
+    return{title:"Idle",detail:"System ready",dot:"",banner:"System Normal",bannerClass:"normal"};
+}
+
+function displayThermostat(data){
+    el("temperature").textContent=num(data.temperature,1);
+    el("humidity").textContent=num(data.humidity,0)+"%";
+    el("setpoint").textContent=num(data.setpoint,1)+"°";
+
+    const mode=String(data.mode||"--").toUpperCase();
+    const fan=String(data.fan||"--").toUpperCase();
+
+    el("heroMode").textContent=mode;
+    el("modeValue").textContent=mode;
+    el("fanValue").textContent=fan;
+    el("downstairsTemperature").textContent=num(data.downstairsTemp,1)+"°F";
+    el("upstairsTemperature").textContent=num(data.upstairsTemp,1)+"°F";
+    el("activeSensor").textContent=data.activeSensor?"Sensor "+data.activeSensor:"--";
+
+    setButton("modeHeat",mode==="HEAT","heat");
+    setButton("modeCool",mode==="COOL","cool");
+    setButton("modeOff",mode==="OFF","off");
+    setButton("fanAuto",fan==="AUTO","fan");
+    setButton("fanOn",fan==="ON","fan");
+
+    const eq=equipmentInfo(data.equipment);
+    el("equipmentValue").textContent=eq.title;
+    el("equipmentDetail").textContent=eq.detail;
+    el("equipmentDot").className="equipment-dot "+eq.dot;
+    el("systemBannerText").textContent=eq.banner;
+    el("systemBanner").className="system-banner "+eq.bannerClass;
+    el("diagnosticSensor1").textContent=data.sensor1Error?"Error":"OK";
+    el("diagnosticSensor2").textContent=data.sensor2Error?"Error":"OK";
+}
+
+async function refreshStatus(force=false){
+    if(refreshInProgress||(!force&&commandInProgress))return;
+    refreshInProgress=true;
+    try{
+        const data=await requestJson(STATUS_URL);
+        consecutiveFailures=0;
+        lastSuccessfulUpdate=Date.now();
+        displayThermostat(data);
+        setConnectionState(true,false);
+        const now=new Date().toLocaleTimeString();
+        el("lastUpdated").textContent="Updated "+now;
+        el("diagnosticUpdated").textContent=now;
+        el("footerError").textContent="";
+        if(el("commandMessage").textContent.includes("unlock"))showMessage("BANDYSTAT is online and ready.");
+    }catch(error){
+        consecutiveFailures++;
+        const seconds=lastSuccessfulUpdate?(Date.now()-lastSuccessfulUpdate)/1000:999;
+        const offline=consecutiveFailures>=3&&seconds>=20;
+        setConnectionState(false,offline);
+        el("lastUpdated").textContent=offline?"Thermostat connection lost":"Waiting for next update";
+        el("footerError").textContent=error.name==="AbortError"?"Slow controller response":error.message;
+        if(offline)showMessage("Reconnecting to BANDYSTAT…");
+    }finally{refreshInProgress=false}
+}
+
+async function sendCommand(command){
+    if(!controllerOnline||commandInProgress)return;
+    commandInProgress=true;
+    setControls();
+    showMessage("Sending command…");
+    try{
+        const result=await requestJson(COMMAND_BASE_URL+command);
+        if(result.success===false)throw new Error(result.error||"Command rejected");
+        showMessage(result.message||"Command accepted","success");
+        await new Promise(r=>setTimeout(r,250));
+        await refreshStatus(true);
+    }catch(error){
+        showMessage(error.name==="AbortError"?"Command timed out":"Command failed: "+error.message,"error");
+    }finally{
+        commandInProgress=false;
+        setControls();
+        setTimeout(()=>refreshStatus(true),300);
+    }
+}
+
+function findValue(text,patterns){
+    for(const p of patterns){
+        const m=text.match(p);
+        if(m&&m[1]!==undefined)return m[1].trim();
+    }
+    return null;
+}
+
+function parsePressure(text) {
+
+    const temp = document.createElement("div");
+    temp.innerHTML = text;
+
+    const lines = temp.innerText
+        .split("\n")
+        .map(x => x.trim())
+        .filter(x => x.length);
+
+    function findAfter(label) {
+        const index = lines.findIndex(
+            x => x.toLowerCase() === label.toLowerCase()
         );
 
-        /*
-         * =====================================================
-         * PAGE NAVIGATION
-         * =====================================================
-         */
+        if (index >= 0 && index + 1 < lines.length) {
+            return lines[index + 1];
+        }
 
-        document
-            .querySelectorAll(
-                ".navigation-button"
-            )
-            .forEach(
-                function (button) {
-                    button.addEventListener(
-                        "click",
-                        function () {
-                            const selectedPage =
-                                button.dataset.page;
+        return "--";
+    }
 
-                            document
-                                .querySelectorAll(
-                                    ".navigation-button"
-                                )
-                                .forEach(
-                                    function (
-                                        navigationButton
-                                    ) {
-                                        navigationButton
-                                            .classList
-                                            .toggle(
-                                                "active",
-                                                navigationButton ===
-                                                button
-                                            );
-                                    }
-                                );
+    return {
+        pressure: Number(
+            findAfter("Pressure").replace("Pa","")
+        ),
 
-                            document
-                                .querySelectorAll(
-                                    ".page"
-                                )
-                                .forEach(
-                                    function (page) {
-                                        page
-                                            .classList
-                                            .toggle(
-                                                "active",
-                                                page.id ===
-                                                "page-" +
-                                                selectedPage
-                                            );
-                                    }
-                                );
-                        }
-                    );
-                }
-            );
+        state: findAfter("Status"),
 
-        /*
-         * =====================================================
-         * APPLICATION STARTUP
-         * =====================================================
-         */
+        fan: findAfter("Fan"),
 
-        setConnectionState(
-            false
-        );
+        requestedFan: findAfter("Requested"),
 
-        refreshStatus();
+        starts: Number(findAfter("Starts")),
 
-        setInterval(
-            refreshStatus,
-            REFRESH_INTERVAL_MS
-        );
-    </script>
+        temperature: Number(
+            findAfter("Temperature").replace("F","")
+        ),
 
+        humidity: Number(
+            findAfter("Humidity").replace("%","")
+        ),
+
+        runtime: findAfter("Runtime")
+    };
+}
+function pressureStyle(state){
+    const s=String(state||"--").trim().toUpperCase();
+    if(s.includes("NEGATIVE")||s.includes("ALERT")||s.includes("FAULT"))return{cls:"alert",name:s.replaceAll("_"," ")};
+    if(s.includes("PRESSUR")||s.includes("RUN"))return{cls:"pressurizing",name:s.replaceAll("_"," ")};
+    if(s.includes("NORMAL")||s.includes("IDLE"))return{cls:"normal",name:s.replaceAll("_"," ")};
+    return{cls:"normal",name:s.replaceAll("_"," ")};
+}
+
+function runtime(sec){
+    const s=Number(sec);
+    if(!Number.isFinite(s)||s<0)return"--";
+    const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),r=Math.floor(s%60);
+    if(h)return h+"h "+String(m).padStart(2,"0")+"m";
+    if(m)return m+"m "+String(r).padStart(2,"0")+"s";
+    return r+"s";
+}
+
+function direction(p){
+    if(!Number.isFinite(p))return"Pressure reading unavailable";
+    if(p<-.05)return"House is negative";
+    if(p>.05)return"House is positive";
+    return"House pressure is near neutral";
+}
+
+function addEvent(message,cls){
+    pressureEvents.unshift({time:new Date().toLocaleTimeString(),message,cls});
+    pressureEvents=pressureEvents.slice(0,30);
+    renderEvents();
+}
+
+function renderEvents(){
+    const box=el("pressureEventLog");
+    if(!pressureEvents.length){
+        box.innerHTML='<div class="information-note">No pressure events recorded.</div>';
+        return;
+    }
+    box.innerHTML=pressureEvents.map(e=>
+        '<div class="event-entry '+e.cls+'"><span class="event-time">'+e.time+
+        '</span><span>'+escapeHtml(e.message)+'</span></div>'
+    ).join("");
+}
+
+function escapeHtml(v){
+    return String(v).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;");
+}
+
+function displayPressure(d){
+    const p=Number(d.pressure);
+    const style=pressureStyle(d.state);
+
+    el("pressureValue").textContent=num(p,2);
+    el("pressureDirection").textContent=direction(p);
+    el("pressureState").textContent=style.name;
+    el("pressureFan").textContent=d.fan||"--";
+    el("pressureRequestedFan").textContent=d.requestedFan||"--";
+    el("pressureRuntime").textContent=d.runtime;
+    el("pressureStarts").textContent=Number.isFinite(d.starts)?String(d.starts):"--";
+    el("pressureTemperature").textContent=Number.isFinite(d.temperature)?num(d.temperature,1)+"°F":"--.-°F";
+    el("pressureHumidity").textContent=Number.isFinite(d.humidity)?num(d.humidity,1)+"%":"--.-%";
+    el("pressureBannerText").textContent="Pressure controller "+style.name.toLowerCase();
+    el("pressureBanner").className="pressure-banner "+style.cls;
+    el("pressureConnectionText").textContent="Updated "+new Date().toLocaleTimeString();
+    el("diagnosticPressureController").textContent="Online";
+
+    const limited=Math.max(-2,Math.min(2,p));
+    const pct=((limited+2)/4)*100;
+    el("pressureGaugeNeedle").style.left=pct+"%";
+    el("pressureGaugeLabel").textContent=num(p,2)+" Pa";
+
+    const signature=[num(p,2),style.name,d.fan,d.requestedFan].join("|");
+    if(!lastPressureSignature){
+        addEvent("Connected: "+style.name+", pressure "+num(p,2)+" Pa",style.cls);
+    }else if(lastPressureState!==style.name){
+        addEvent("State changed to "+style.name+" at "+num(p,2)+" Pa",style.cls);
+    }else if(signature!==lastPressureSignature){
+        addEvent("Pressure "+num(p,2)+" Pa, fan "+(d.fan||"--")+", request "+(d.requestedFan||"--"),style.cls);
+    }
+    lastPressureState=style.name;
+    lastPressureSignature=signature;
+}
+
+async function refreshPressure(){
+    if(pressureRefreshInProgress)return;
+    pressureRefreshInProgress=true;
+    try{
+        const text=await requestText(PRESSURE_STATUS_URL);
+        const d=parsePressure(text);
+        if(!Number.isFinite(d.pressure))throw new Error("Pressure value missing");
+        displayPressure(d);
+    }catch(error){
+        el("pressureBanner").className="pressure-banner offline";
+        el("pressureBannerText").textContent="Pressure controller unavailable";
+        el("pressureConnectionText").textContent="Offline";
+        el("diagnosticPressureController").textContent="Offline";
+    }finally{pressureRefreshInProgress=false}
+}
+
+controls.forEach(button=>button.addEventListener("click",()=>sendCommand(button.dataset.command)));
+
+document.querySelectorAll(".navigation-button").forEach(button=>{
+    button.addEventListener("click",()=>{
+        const page=button.dataset.page;
+        document.querySelectorAll(".navigation-button").forEach(b=>b.classList.toggle("active",b===button));
+        document.querySelectorAll(".page").forEach(p=>p.classList.toggle("active",p.id==="page-"+page));
+        if(page==="pressure")refreshPressure();
+    });
+});
+
+el("clearPressureLog").addEventListener("click",()=>{
+    pressureEvents=[];
+    renderEvents();
+});
+
+setConnectionState(false,true);
+refreshStatus(true);
+refreshPressure();
+setInterval(()=>refreshStatus(false),REFRESH_INTERVAL_MS);
+setInterval(refreshPressure,REFRESH_INTERVAL_MS);
+</script>
 </body>
 </html>
