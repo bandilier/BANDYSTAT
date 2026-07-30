@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>BANDYSTAT Login</title>
+
+<link rel="stylesheet" href="css/bandystat.css">
+
+<style>
+body{
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+.login-box{
+    width:min(90%,360px);
+    background:#0f172a;
+    border:1px solid rgba(148,163,184,.18);
+    border-radius:20px;
+    padding:30px;
+    text-align:center;
+}
+
+.login-box h1{
+    margin-bottom:8px;
+}
+
+.login-box p{
+    color:#94a3b8;
+}
+
+input{
+    width:100%;
+    padding:14px;
+    margin-top:20px;
+    border-radius:12px;
+    border:1px solid #334155;
+    background:#020617;
+    color:white;
+    font-size:1rem;
+}
+
+button{
+    width:100%;
+    margin-top:15px;
+    padding:14px;
+    border:none;
+    border-radius:12px;
+    background:#2563eb;
+    color:white;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.error{
+    color:#f87171;
+    margin-top:15px;
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="login-box">
+
+<h1>BANDYSTAT</h1>
+
+<p>Home Environmental Controller</p>
+
+<input id="password" type="password" placeholder="Password">
+
+<button onclick="login()">Login</button>
+
+<div id="error" class="error"></div>
+
+</div>
+
+
+<script>
+
+function login(){
+
+    const password =
+        document.getElementById("password").value;
+
+    if(password === "CHANGE_ME")
+    {
+        localStorage.setItem(
+            "bandystat_auth",
+            "true"
+        );
+
+        window.location.href="index.html";
+    }
+    else
+    {
+        document.getElementById("error").innerHTML =
+        "Incorrect password";
+    }
+}
+
+</script>
+
+</body>
+</html>
