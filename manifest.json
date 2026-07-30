@@ -1,0 +1,16 @@
+{
+  "name": "BANDYSTAT",
+  "short_name": "BANDYSTAT",
+  "start_url": "/sd/",
+  "display": "standalone",
+  "background_color": "#07111f",
+  "theme_color": "#07111f",
+  "description": "Home Environmental Controller",
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ]
+}
